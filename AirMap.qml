@@ -62,8 +62,8 @@ Map {
         model: Controller.airportList.airports
 
         delegate: MapCircle {
-            required property Airport modelData
-            center: modelData.position
+            property Airport airport : modelData
+            center: airport.position
             radius: 10
             color: "blue"
         }
