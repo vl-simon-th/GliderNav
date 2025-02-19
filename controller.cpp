@@ -11,8 +11,13 @@ Controller::Controller(QObject *parent)
 
     QDir aptDir = QDir(baseDir.filePath("apt"));
     if(!aptDir.exists()) aptDir.mkpath("./");
-    airportList = new AirportList(this);
-    airportList->importAirportsFromDir(aptDir);
+    airportModel = new AirportModel(this);
+    airportModel->importAirportsFromDir(aptDir);
+
+    QDir asDir = QDir(baseDir.filePath("as"));
+    if(!asDir.exists()) asDir.mkpath("./");
+    airspaceModel = new AirspaceModel(this);
+    airspaceModel->importAirspacesFromDir(asDir);
 }
 
 Task *Controller::getCurrentTask() const
@@ -51,7 +56,12 @@ FlightLogList *Controller::getLogList() const
     return logList;
 }
 
-AirportList *Controller::getAirportList() const
+AirportModel *Controller::getAirportModel() const
 {
-    return airportList;
+    return airportModel;
+}
+
+AirspaceModel *Controller::getAirspaceModel() const
+{
+    return airspaceModel;
 }

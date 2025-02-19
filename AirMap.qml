@@ -2,70 +2,99 @@ import QtQuick
 import QtLocation
 import QtPositioning
 
+import QtQuick.Controls
+
 import GliderNav
 
-Map {
-    id: map
+MapView {
+    id: mapView
+
+    property Task currentTask
 
     Plugin {
         id: osmMapPlugin
         name: "osm"
     }
 
-    plugin: osmMapPlugin
+    map.plugin: osmMapPlugin
 
-    PinchHandler {
-        id: pinch
-        target: null
-        onActiveChanged: if (active) {
-            map.startCentroid = map.toCoordinate(pinch.centroid.position, false)
-        }
-        onScaleChanged: (delta) => {
-            map.zoomLevel += Math.log2(delta)
-            map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
-        }
-        onRotationChanged: (delta) => {
-            map.bearing -= delta
-            map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
+    MapItemGroup {
+        id: taskMapItemGroup
+
+        MapPolyline {
+            id: taskPath
+
+            path: currentTask ? currentTask.turnPoints : []
+
+            line.color: "green"
+            line.width: 2
         }
 
-        grabPermissions: PointerHandler.TakeOverForbidden
-    }
-    WheelHandler {
-        id: wheel
-        // workaround for QTBUG-87646 / QTBUG-112394 / QTBUG-112432:
-        // Magic Mouse pretends to be a trackpad but doesn't work with PinchHandler
-        // and we don't yet distinguish mice and trackpads on Wayland either
-        acceptedDevices: Qt.platform.pluginName === "cocoa" || Qt.platform.pluginName === "wayland"
-                        ? PointerDevice.Mouse | PointerDevice.TouchPad
-                        : PointerDevice.Mouse
-        rotationScale: 1/120
-        property: "zoomLevel"
-    }
-    DragHandler {
-        id: drag
-        target: null
-        onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
-    }
-    Shortcut {
-        enabled: map.zoomLevel < map.maximumZoomLevel
-        sequence: StandardKey.ZoomIn
-        onActivated: map.zoomLevel = Math.round(map.zoomLevel + 1)
-    }
-    Shortcut {
-        enabled: map.zoomLevel > map.minimumZoomLevel
-        sequence: StandardKey.ZoomOut
-        onActivated: map.zoomLevel = Math.round(map.zoomLevel - 1)
+        MapItemView {
+            model: currentTask ? currentTask.turnPoints : []
+
+            delegate: MapCircle {
+                property double distance : currentTask.distancesToPoint[index] ? currentTask.distancesToPoint[index] : 0
+                center: modelData
+                border.color: "pink"
+                border.width: 2
+
+                color: "pink"
+                opacity: 50
+
+                /*
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {console.log("clicked")}
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "red"
+                    }
+                }*/
+
+                Component.onCompleted: radius = distance
+            }
+        }
+
+        Component.onCompleted: mapView.map.addMapItemGroup(taskMapItemGroup)
     }
 
-    Repeater {
-        model: Controller.airportList.airports
+    MapItemView {
+        id: airportMapItemView
+        model: Controller.airportModel
 
         delegate: MapCircle {
-            property Airport airport : modelData
-            center: airport.position
-            radius: 10
+            id: airportCircle
+            center: model.position
+            radius: 1000
             color: "blue"
+        }
+
+        Component.onCompleted: mapView.map.addMapItemView(airportMapItemView)
+    }
+
+
+    MapItemView {
+        id: airspaceMapItemView
+        model: Controller.airspaceModel
+
+        delegate: MapPolyline {
+            path: model.coordinates
+            line.width: 1.5
+            line.color: model.type === "C" || model.type === "D" ? "red" : "blue"
+        }
+    }
+
+    property bool aptAsLoaded : true
+    map.onZoomLevelChanged: {
+        if (zoomLevel > 7 && !aptAsLoaded) {
+            map.addMapItemView(airportMapItemView)
+            map.addMapItemView(airspaceMapItemView)
+            aptAsLoaded = true
+        } else if (zoomLevel <= 7 && aptAsLoaded) {
+            map.removeMapItemView(airportMapItemView)
+            map.removeMapItemView(airspaceMapItemView)
+            aptAsLoaded = false
         }
     }
 }

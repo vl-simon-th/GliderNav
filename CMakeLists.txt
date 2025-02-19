@@ -51,7 +51,10 @@ qt_add_qml_module(GliderNav
         QML_FILES SettingsView.qml
         SOURCES airport.h airport.cpp
         SOURCES airspace.h airspace.cpp
-        SOURCES airportlist.h airportlist.cpp
+        SOURCES
+        SOURCES
+        SOURCES airportmodel.h airportmodel.cpp
+        SOURCES airspacemodel.h airspacemodel.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

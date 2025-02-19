@@ -6,6 +6,7 @@ import GliderNav
 
 ListView {
     id: root
+    signal toMovingMap()
 
     spacing: 6
 
@@ -43,7 +44,10 @@ ListView {
             ToolButton {
                 id: loadButton
 
-                onClicked: Controller.currentTask = task
+                onClicked: {
+                    Controller.currentTask = task
+                    root.toMovingMap()
+                }
 
                 display: AbstractButton.IconOnly
                 icon.source: "icons/share-2.svg"
@@ -55,8 +59,8 @@ ListView {
                 id: editButton
 
                 onClicked: {
-                    taskEditView.task = task
-                    taskEditView.visible = true
+                    taskEditViewLoader.sourceComponent = taskEditViewComponent
+                    taskEditViewLoader.item.task = task
                 }
 
                 display: AbstractButton.IconOnly
@@ -89,10 +93,11 @@ ListView {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
+        anchors.margins: 8
 
         onClicked: {
-            taskEditView.task = taskFactory.createObject()
-            taskEditView.visible = true
+            taskEditViewLoader.sourceComponent = taskEditViewComponent
+            taskEditViewLoader.item.task = taskFactory.createObject()
         }
 
         Component {
@@ -104,11 +109,20 @@ ListView {
         }
     }
 
-    TaskEditView {
-        id: taskEditView
+    Loader {
+        id: taskEditViewLoader
         anchors.fill: parent
         z: 2
 
-        visible: false;
+        sourceComponent: undefined
+    }
+
+    Component {
+        id: taskEditViewComponent
+        TaskEditView {
+            id: taskEditView
+
+            onClose: taskEditViewLoader.sourceComponent = undefined
+        }
     }
 }

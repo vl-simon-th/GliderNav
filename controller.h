@@ -10,8 +10,8 @@
 #include "flightlog.h"
 #include "flightloglist.h"
 
-#include "airportlist.h"
-
+#include "airportmodel.h"
+#include "airspacemodel.h"
 
 #include <QDir>
 #include <QStandardPaths>
@@ -35,7 +35,9 @@ public:
 
     FlightLogList *getLogList() const;
 
-    AirportList *getAirportList() const;
+    AirportModel *getAirportModel() const;
+
+    AirspaceModel *getAirspaceModel() const;
 
 signals:
 
@@ -54,8 +56,10 @@ private:
     Q_PROPERTY(FlightLog *currentLog READ getCurrentLog WRITE setCurrentLog NOTIFY currentLogChanged FINAL)
     Q_PROPERTY(FlightLogList *logList READ getLogList CONSTANT FINAL)
 
-    AirportList *airportList;
-    Q_PROPERTY(AirportList *airportList READ getAirportList CONSTANT FINAL)
+    AirportModel *airportModel;
+    AirspaceModel *airspaceModel;
+    Q_PROPERTY(AirportModel *airportModel READ getAirportModel CONSTANT FINAL)
+    Q_PROPERTY(AirspaceModel *airspaceModel READ getAirspaceModel CONSTANT FINAL)
 };
 
 #endif // CONTROLLER_H

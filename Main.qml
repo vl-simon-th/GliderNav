@@ -15,10 +15,13 @@ ApplicationWindow {
 
         TasksView {
             id: tasksView
+            onToMovingMap: swipeView.setCurrentIndex(1)
         }
 
         MovingMap {
             id: movingMap
+
+            visible: swipeView.currentIndex === 1
         }
 
         LogsView {

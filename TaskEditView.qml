@@ -5,14 +5,18 @@ import QtQuick.Dialogs
 
 import GliderNav
 
+import QtPositioning
+import QtLocation
+
 Page {
     id: root
     property Task task : Task{}
+    signal close()
 
     TextField {
         id: nameTextField
 
-        text: task.name
+        text: task ? task.name : ""
 
         z:2
 
@@ -25,9 +29,18 @@ Page {
     }
 
     AirMap {
-        id: map
+        id: airMap
 
         anchors.fill: parent
+        currentTask: task
+
+        TapHandler {
+            id: tapHandler
+
+            onSingleTapped: {
+                task.addTurnPoint(airMap.map.toCoordinate(tapHandler.point.position), 1000)
+            }
+        }
     }
 
     footer: ToolBar {
@@ -49,7 +62,7 @@ Page {
                         Controller.tasksList.removeTask(task)
                     }
 
-                    root.visible = false
+                    root.close()
                 }
             }
 
@@ -66,7 +79,7 @@ Page {
                 onClicked: {
                     if(nameTextField.text !== "") {
                         task.name = nameTextField.text
-                        root.visible = false
+                        root.close()
                     } else {
                         dialog.open()
                     }

@@ -2,6 +2,8 @@ import QtQuick
 import QtLocation
 import QtPositioning
 
+import GliderNav
+
 Item {
     id: root
 
@@ -9,14 +11,11 @@ Item {
         id: positionSource
     }
 
-    Plugin {
-        id: osmMapPlugin
-        name: "osm"
-    }
-
     AirMap {
         id: map
 
         anchors.fill: parent
+
+        currentTask: Controller.currentTask
     }
 }
