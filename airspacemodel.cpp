@@ -1,7 +1,5 @@
 #include "airspacemodel.h"
-#include <QFile>
-#include <QTextStream>
-#include <QDebug>
+#include "roles.h"
 
 AirspaceModel::AirspaceModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -23,20 +21,22 @@ QVariant AirspaceModel::data(const QModelIndex &index, int role) const
     Airspace *airspace = airspaces.at(index.row());
 
     switch (role) {
-    case TypeRole:
+    case Roles::TypeRole:
         return airspace->getType();
-    case AirspaceNameRole:
+    case Roles::NameRole:
         return airspace->getName();
-    case LowerAltitudeRole:
+    case Roles::LowerAltitudeRole:
         return airspace->getLowerAltitude();
-    case UpperAltitudeRole:
+    case Roles::UpperAltitudeRole:
         return airspace->getUpperAltitude();
-    case LowerAltitudeUnitsRole:
+    case Roles::LowerAltitudeUnitsRole:
         return QVariant::fromValue(airspace->getLowerAltitudeUnits());
-    case UpperAltitudeUnitsRole:
+    case Roles::UpperAltitudeUnitsRole:
         return QVariant::fromValue(airspace->getUpperAltitudeUnits());
-    case CoordinatesRole:
+    case Roles::CoordinatesRole:
         return QVariant::fromValue(airspace->getCoordinates());
+    case Roles::GeoBoundingRect:
+        return QVariant::fromValue(airspace->getGeoBoundingRect());
     default:
         return QVariant();
     }
@@ -45,13 +45,14 @@ QVariant AirspaceModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> AirspaceModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[TypeRole] = "type";
-    roles[AirspaceNameRole] = "name";
-    roles[LowerAltitudeRole] = "lowerAltitude";
-    roles[UpperAltitudeRole] = "upperAltitude";
-    roles[LowerAltitudeUnitsRole] = "lowerAltitudeUnits";
-    roles[UpperAltitudeUnitsRole] = "upperAltitudeUnits";
-    roles[CoordinatesRole] = "coordinates";
+    roles[Roles::TypeRole] = "type";
+    roles[Roles::NameRole] = "name";
+    roles[Roles::LowerAltitudeRole] = "lowerAltitude";
+    roles[Roles::UpperAltitudeRole] = "upperAltitude";
+    roles[Roles::LowerAltitudeUnitsRole] = "lowerAltitudeUnits";
+    roles[Roles::UpperAltitudeUnitsRole] = "upperAltitudeUnits";
+    roles[Roles::CoordinatesRole] = "coordinates";
+    roles[Roles::GeoBoundingRect] = "geoBoundingRect";
     return roles;
 }
 

@@ -12,6 +12,7 @@ Airspace::Airspace(const QString &type, const QString &name, double lowerAltitud
     : QObject{parent}, type(type), name(name), lowerAltitude(lowerAltitude), upperAltitude(upperAltitude),
     lowerAltitudeUnits(lowerAltitudeUnits), upperAltitudeUnits(upperAltitudeUnits), coordinates(coordinates)
 {
+    geoBoundingRect = QGeoPolygon(this->coordinates).boundingGeoRectangle();
 }
 
 Airspace::Airspace(const QString &type, const QString &name, const QString &lowerAltitude, const QString &upperAltitude,
@@ -19,6 +20,7 @@ Airspace::Airspace(const QString &type, const QString &name, const QString &lowe
     : QObject(parent), type(type), name(name), lowerAltitude(parseAltitude(lowerAltitude, lowerAltitudeUnits)),
     upperAltitude(parseAltitude(upperAltitude, upperAltitudeUnits)), coordinates(parseCoordinates(coordinates))
 {
+    geoBoundingRect = QGeoPolygon(this->coordinates).boundingGeoRectangle();
 }
 
 QString Airspace::getType() const {
@@ -94,8 +96,14 @@ QList<QGeoCoordinate> Airspace::getCoordinates() const {
 void Airspace::setCoordinates(const QList<QGeoCoordinate> &coordinates) {
     if (this->coordinates != coordinates) {
         this->coordinates = coordinates;
+        geoBoundingRect = QGeoPolygon(this->coordinates).boundingGeoRectangle();
         emit coordinatesChanged();
     }
+}
+
+QGeoRectangle Airspace::getGeoBoundingRect() const
+{
+    return geoBoundingRect;
 }
 
 double Airspace::parseAltitude(const QString &altitudeString, AltitudeUnit &unit) const {

@@ -18,6 +18,13 @@ Controller::Controller(QObject *parent)
     if(!asDir.exists()) asDir.mkpath("./");
     airspaceModel = new AirspaceModel(this);
     airspaceModel->importAirspacesFromDir(asDir);
+
+
+    airportFilterModel = new AirportFilterModel(this);
+    airportFilterModel->setSourceModel(airportModel);
+
+    airspaceFilterModel = new AirspaceFilterModel(this);
+    airspaceFilterModel->setSourceModel(airspaceModel);
 }
 
 Task *Controller::getCurrentTask() const
@@ -64,4 +71,14 @@ AirportModel *Controller::getAirportModel() const
 AirspaceModel *Controller::getAirspaceModel() const
 {
     return airspaceModel;
+}
+
+AirportFilterModel *Controller::getAirportFilterModel() const
+{
+    return airportFilterModel;
+}
+
+AirspaceFilterModel *Controller::getAirspaceFilterModel() const
+{
+    return airspaceFilterModel;
 }

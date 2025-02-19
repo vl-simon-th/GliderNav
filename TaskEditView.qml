@@ -13,23 +13,60 @@ Page {
     property Task task : Task{}
     signal close()
 
-    TextField {
-        id: nameTextField
+    header: RowLayout {
+        spacing: 6
+        TextField {
+            id: nameTextField
 
-        text: task ? task.name : ""
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
-        z:2
+            text: task ? task.name : ""
 
-        anchors.margins: 6
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+            placeholderText: qsTr("Enter Task Name")
+        }
 
-        placeholderText: qsTr("Enter Task Name")
+        Text {
+            id: aatText
+
+            Layout.fillHeight: true
+
+            text: qsTr("AAT")
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        Switch {
+            id: taskTypeSwitch
+
+            Layout.fillHeight: true
+
+            onCheckedChanged: {
+                if(!checked) {
+                    task.taskType = 0
+                } else {
+                    task.taskType = 1
+                }
+            }
+
+            checked: task.taskType === 0 ? false : true
+        }
+
+        Text {
+            id: rtText
+
+            Layout.fillHeight: true
+
+            text: qsTr("RT")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 
     AirMap {
         id: airMap
+
+        editTask: true
 
         anchors.fill: parent
         currentTask: task
@@ -40,6 +77,39 @@ Page {
             onSingleTapped: {
                 task.addTurnPoint(airMap.map.toCoordinate(tapHandler.point.position), 1000)
             }
+        }
+
+        MapItemView {
+            id: tpMarkerMapItemView
+            model: task.turnPoints
+
+            delegate: MapQuickItem {
+                id: tpMarkerMapQuickItem
+                coordinate: modelData
+                sourceItem: AbstractButton {
+                    height: 30
+
+                    x: height/-2
+                    y: height/-2
+                    width: height
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: height/2
+
+                        color: "pink"
+                    }
+
+                    onClicked: task.addTurnPoint(tpMarkerMapQuickItem.coordinate, 1000)
+
+                    onDoubleClicked: task.removeTurnPoint(tpMarkerMapQuickItem.coordinate)
+                }
+            }
+
+            Component.onCompleted: airMap.map.addMapItemView(tpMarkerMapItemView)
+        }
+
+        onAirportClicked: (coordinate) => {
+            task.addTurnPoint(coordinate, 1000)
         }
     }
 

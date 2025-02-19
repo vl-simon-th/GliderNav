@@ -1,5 +1,7 @@
 #include "airportmodel.h"
 
+#include "roles.h"
+
 AirportModel::AirportModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
@@ -20,27 +22,27 @@ QVariant AirportModel::data(const QModelIndex &index, int role) const
     Airport *airport = airports.at(index.row());
 
     switch (role) {
-    case AirportNameRole:
+    case Roles::NameRole:
         return airport->getName();
-    case CodeRole:
+    case Roles::CodeRole:
         return airport->getCode();
-    case CountryRole:
+    case Roles::CountryRole:
         return airport->getCountry();
-    case PositionRole:
+    case Roles::PositionRole:
         return QVariant::fromValue(airport->getPosition());
-    case ElevationRole:
+    case Roles::ElevationRole:
         return airport->getElevation();
-    case StyleRole:
+    case Roles::StyleRole:
         return airport->getStyle();
-    case RwdirRole:
+    case Roles::RwdirRole:
         return airport->getRwdir();
-    case RwlenRole:
+    case Roles::RwlenRole:
         return airport->getRwlen();
-    case RwwidthRole:
+    case Roles::RwwidthRole:
         return airport->getRwwidth();
-    case FreqRole:
+    case Roles::FreqRole:
         return airport->getFreq();
-    case DescRole:
+    case Roles::DescRole:
         return airport->getDesc();
     default:
         return QVariant();
@@ -50,17 +52,17 @@ QVariant AirportModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> AirportModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[AirportNameRole] = "name";
-    roles[CodeRole] = "code";
-    roles[CountryRole] = "country";
-    roles[PositionRole] = "position";
-    roles[ElevationRole] = "elevation";
-    roles[StyleRole] = "style";
-    roles[RwdirRole] = "rwdir";
-    roles[RwlenRole] = "rwlen";
-    roles[RwwidthRole] = "rwwidth";
-    roles[FreqRole] = "freq";
-    roles[DescRole] = "desc";
+    roles[Roles::NameRole] = "name";
+    roles[Roles::CodeRole] = "code";
+    roles[Roles::CountryRole] = "country";
+    roles[Roles::PositionRole] = "position";
+    roles[Roles::ElevationRole] = "elevation";
+    roles[Roles::StyleRole] = "style";
+    roles[Roles::RwdirRole] = "rwdir";
+    roles[Roles::RwlenRole] = "rwlen";
+    roles[Roles::RwwidthRole] = "rwwidth";
+    roles[Roles::FreqRole] = "freq";
+    roles[Roles::DescRole] = "desc";
     return roles;
 }
 

@@ -7,15 +7,8 @@
 #include <QDir>
 #include "airspace.h"
 
-enum AirspaceRoles {
-    TypeRole = Qt::UserRole + 1,
-    AirspaceNameRole,
-    LowerAltitudeRole,
-    UpperAltitudeRole,
-    LowerAltitudeUnitsRole,
-    UpperAltitudeUnitsRole,
-    CoordinatesRole
-};
+#include <QFile>
+#include <QTextStream>
 
 class AirspaceModel : public QAbstractListModel
 {

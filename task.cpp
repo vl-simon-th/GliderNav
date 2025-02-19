@@ -33,14 +33,17 @@ void Task::setDistancesToPoint(const QList<double> &newDistancesToPoint)
 
 void Task::addTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distance)
 {
+    if(turnPoints.size() > 0 && turnPoints.last() == newTurnPoint) return;
+
     turnPoints.append(newTurnPoint);
     distancesToPoint.append(distance);
     emit turnPointsChanged();
     emit distancesToPointChanged();
 }
 
-void Task::removeTurnPoint(const int &index)
+void Task::removeTurnPoint(const QGeoCoordinate &turnPoint)
 {
+    int index = turnPoints.indexOf(turnPoint);
     turnPoints.removeAt(index);
     distancesToPoint.removeAt(index);
     emit turnPointsChanged();
@@ -56,6 +59,19 @@ double Task::calculateDistance()
     }
 
     return distance;
+}
+
+TaskType Task::getTaskType() const
+{
+    return taskType;
+}
+
+void Task::setTaskType(TaskType newTaskType)
+{
+    if (taskType == newTaskType)
+        return;
+    taskType = newTaskType;
+    emit taskTypeChanged();
 }
 
 QString Task::getName() const

@@ -13,6 +13,9 @@
 #include "airportmodel.h"
 #include "airspacemodel.h"
 
+#include "airportfiltermodel.h"
+#include "airspacefiltermodel.h"
+
 #include <QDir>
 #include <QStandardPaths>
 
@@ -39,6 +42,10 @@ public:
 
     AirspaceModel *getAirspaceModel() const;
 
+    AirportFilterModel *getAirportFilterModel() const;
+
+    AirspaceFilterModel *getAirspaceFilterModel() const;
+
 signals:
 
     void currentTaskChanged();
@@ -60,6 +67,11 @@ private:
     AirspaceModel *airspaceModel;
     Q_PROPERTY(AirportModel *airportModel READ getAirportModel CONSTANT FINAL)
     Q_PROPERTY(AirspaceModel *airspaceModel READ getAirspaceModel CONSTANT FINAL)
+
+    AirportFilterModel *airportFilterModel;
+    AirspaceFilterModel *airspaceFilterModel;
+    Q_PROPERTY(AirportFilterModel *airportFilterModel READ getAirportFilterModel CONSTANT FINAL)
+    Q_PROPERTY(AirspaceFilterModel *airspaceFilterModel READ getAirspaceFilterModel CONSTANT FINAL)
 };
 
 #endif // CONTROLLER_H

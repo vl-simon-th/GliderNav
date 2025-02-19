@@ -10,20 +10,6 @@
 #include <QDir>
 #include <QString>
 
-enum AirportRoles {
-    AirportNameRole = Qt::UserRole + 1,
-    CodeRole,
-    CountryRole,
-    PositionRole,
-    ElevationRole,
-    StyleRole,
-    RwdirRole,
-    RwlenRole,
-    RwwidthRole,
-    FreqRole,
-    DescRole
-};
-
 class AirportModel : public QAbstractListModel
 {
     Q_OBJECT

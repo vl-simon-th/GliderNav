@@ -104,7 +104,10 @@ ListView {
             id:taskFactory
             Task {
                 id: task
-                Component.onCompleted: Controller.tasksList.addTask(task)
+                Component.onCompleted: {
+                    taskType = 1
+                    Controller.tasksList.addTask(task)
+                }
             }
         }
     }

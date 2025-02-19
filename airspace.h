@@ -7,6 +7,9 @@
 #include <QQmlEngine>
 #include <QObject>
 
+#include <QGeoRectangle>
+#include <QGeoPolygon>
+
 enum class AltitudeUnit {
     GND,
     MSL,
@@ -56,6 +59,8 @@ public:
     QList<QGeoCoordinate> getCoordinates() const;
     void setCoordinates(const QList<QGeoCoordinate> &coordinates);
 
+    QGeoRectangle getGeoBoundingRect() const;
+
 signals:
     void typeChanged();
     void nameChanged();
@@ -73,6 +78,8 @@ private:
     AltitudeUnit lowerAltitudeUnits;
     AltitudeUnit upperAltitudeUnits;
     QList<QGeoCoordinate> coordinates;
+
+    QGeoRectangle geoBoundingRect;
 
     double parseAltitude(const QString &altitude, AltitudeUnit &unit) const;
     QList<QGeoCoordinate> parseCoordinates(const QString &coordinates) const;
