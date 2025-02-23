@@ -108,7 +108,7 @@ void AirspaceModel::importAirspacesFromFile(const QString &filePath)
 }
 
 void AirspaceModel::importAirspacesFromDir(const QDir &dir)
-{
+{   
     QStringList filters;
     filters << "*.txt";
     QFileInfoList fileInfoList = dir.entryInfoList(filters, QDir::Files);

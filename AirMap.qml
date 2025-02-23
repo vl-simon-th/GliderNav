@@ -12,7 +12,11 @@ MapView {
     property Task currentTask
     property bool editTask : false
 
+    property FlightLog currentFlightLog
+
     signal airportClicked(var coordinate)
+
+    map.onBearingChanged: map.bearing = 0
 
     Plugin {
         id: osmMapPlugin
@@ -20,6 +24,18 @@ MapView {
     }
 
     map.plugin: osmMapPlugin
+    map.copyrightsVisible: false
+
+    MapPolyline {
+        id: flightLogMapPolyline
+
+        path: currentFlightLog ? currentFlightLog.path : []
+
+        line.color: "green"
+        line.width: 4
+
+        Component.onCompleted: mapView.map.addMapItem(flightLogMapPolyline)
+    }
 
     MapItemGroup {
         id: taskMapItemGroup
@@ -88,8 +104,8 @@ MapView {
                 }
 
                 transform: Rotation {
-                    origin.x: 20
-                    origin.y: 20
+                    origin.x: width/2
+                    origin.y: height/2
                     angle: model.rwdir
                 }
 
@@ -127,6 +143,18 @@ MapView {
     map.onCenterChanged: {
         Controller.airportFilterModel.updateViewArea(map.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(map.visibleRegion);
+    }
+
+    PositionSource {
+        id: positionSource
+        updateInterval: 10000
+        active: false
+
+        Component.onCompleted: {
+            positionSource.start()
+            mapView.map.center = positionSource.position.coordinate
+            positionSource.stop()
+        }
     }
 
     Component.onCompleted: {

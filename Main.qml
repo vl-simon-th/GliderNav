@@ -7,11 +7,19 @@ ApplicationWindow {
     visible: true
     title: qsTr("Glider Nav")
 
+    Component.onCompleted: {
+        if (Qt.platform.os === "ios") {
+            Qt.callLater(function() {
+                showFullScreen()
+            })
+        }
+    }
+
     SwipeView {
         id: swipeView
         anchors.fill: parent
 
-        //enabled: false
+        interactive: false
 
         TasksView {
             id: tasksView

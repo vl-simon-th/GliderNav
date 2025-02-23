@@ -8,7 +8,7 @@ find_package(Qt6 REQUIRED COMPONENTS Quick Positioning)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
-qt_add_executable(GliderNav
+qt_add_executable(GliderNav WIN32
     main.cpp
 )
 
@@ -33,11 +33,17 @@ qt_add_qml_module(GliderNav
 
         RESOURCES
             icons/aeroplane-1.svg
+            icons/arrow-left-circle.svg
             icons/check-circle-1.svg
+            icons/eye.svg
             icons/gear-1.svg
+            icons/glider.svg
+            icons/location-arrow-right.svg
             icons/map-marker-1.svg
             icons/pencil-1.svg
+            icons/play.svg
             icons/plus.svg
+            icons/refresh-circle-1-clockwise.svg
             icons/route-1.svg
             icons/share-2.svg
             icons/stopwatch.svg
@@ -51,8 +57,6 @@ qt_add_qml_module(GliderNav
         QML_FILES SettingsView.qml
         SOURCES airport.h airport.cpp
         SOURCES airspace.h airspace.cpp
-        SOURCES
-        SOURCES
         SOURCES airportmodel.h airportmodel.cpp
         SOURCES airspacemodel.h airspacemodel.cpp
         SOURCES airportfiltermodel.h airportfiltermodel.cpp
@@ -64,11 +68,11 @@ qt_add_qml_module(GliderNav
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 set_target_properties(GliderNav PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appGliderNav
+    MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.visionaryworksstudio.glidernav
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
 )
 
 target_link_libraries(GliderNav
@@ -82,3 +86,12 @@ install(TARGETS GliderNav
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+qt_generate_deploy_qml_app_script(
+    TARGET ${PROJECT_NAME}
+    OUTPUT_SCRIPT deploy_script
+    MACOS_BUNDLE_POST_BUILD
+    NO_UNSUPPORTED_PLATFORM_ERROR
+    DEPLOY_USER_QML_MODULES_ON_UNSUPPORTED_PLATFORM
+)
+install(SCRIPT ${deploy_script})

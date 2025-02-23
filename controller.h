@@ -19,6 +19,9 @@
 #include <QDir>
 #include <QStandardPaths>
 
+#include <QList>
+#include <QUrl>
+
 class Controller : public QObject
 {
     Q_OBJECT
@@ -45,6 +48,9 @@ public:
     AirportFilterModel *getAirportFilterModel() const;
 
     AirspaceFilterModel *getAirspaceFilterModel() const;
+
+    Q_INVOKABLE void copyFilesToApt(const QList<QUrl> &files);
+    Q_INVOKABLE void copyFilesToAs(const QList<QUrl> files);
 
 signals:
 

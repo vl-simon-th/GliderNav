@@ -7,6 +7,9 @@
 #include <QList>
 #include "flightlog.h"
 
+#include <QDir>
+#include <QStandardPaths>
+
 class FlightLogList : public QObject
 {
     Q_OBJECT
@@ -17,6 +20,10 @@ public:
     QList<FlightLog *> getLogs() const;
     void setLogs(const QList<FlightLog *> &newLogs);
     Q_INVOKABLE void addLog(FlightLog *newLog);
+    Q_INVOKABLE void deleteLog(FlightLog *flightLog);
+
+    Q_INVOKABLE void writeLogsToDir();
+    Q_INVOKABLE void importLogsFromDir();
 
 signals:
 

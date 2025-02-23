@@ -30,7 +30,7 @@ bool AirportFilterModel::filterAcceptsRow(int row, const QModelIndex &parent) co
     Q_UNUSED(parent);
     const QModelIndex idx = sourceModel()->index(row, 0, parent);
 
-    if(zoomLevel < 7) return false;
+    if(zoomLevel < 8) return false;
 
     int style = idx.data(Roles::StyleRole).value<int>();
     if(!validStyles.contains(style)) return false;

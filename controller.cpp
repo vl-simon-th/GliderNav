@@ -5,6 +5,7 @@ Controller::Controller(QObject *parent)
 {
     tasksList = new TasksList(this);
     logList = new FlightLogList(this);
+    logList->importLogsFromDir();
 
     QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     if(!baseDir.exists()) baseDir.mkpath("./");
@@ -81,4 +82,34 @@ AirportFilterModel *Controller::getAirportFilterModel() const
 AirspaceFilterModel *Controller::getAirspaceFilterModel() const
 {
     return airspaceFilterModel;
+}
+
+void Controller::copyFilesToApt(const QList<QUrl> &files)
+{
+    QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir aptDir = QDir(baseDir.filePath("apt"));
+    if(!aptDir.exists()) aptDir.mkpath("./");
+
+    foreach (QUrl file, files) {
+        qDebug()<< file.toLocalFile();
+        qDebug() << QFile::copy(file.toLocalFile(), aptDir.filePath(file.fileName()));
+        airportModel->importAirportsFromCup(file.toLocalFile());
+    }
+
+    airportFilterModel->invalidate();
+}
+
+void Controller::copyFilesToAs(const QList<QUrl> files)
+{
+    QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir asDir = QDir(baseDir.filePath("as"));
+    if(!asDir.exists()) asDir.mkpath("./");
+
+    foreach (QUrl file, files) {
+        qDebug()<< file.toLocalFile();
+        qDebug() << QFile::copy(file.toLocalFile(), asDir.filePath(file.fileName()));
+        airspaceModel->importAirspacesFromFile(asDir.filePath(file.fileName()));
+    }
+
+    airspaceFilterModel->invalidate();
 }

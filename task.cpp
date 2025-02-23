@@ -43,7 +43,7 @@ void Task::addTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distan
 
 void Task::removeTurnPoint(const QGeoCoordinate &turnPoint)
 {
-    int index = turnPoints.indexOf(turnPoint);
+    int index = turnPoints.lastIndexOf(turnPoint);
     turnPoints.removeAt(index);
     distancesToPoint.removeAt(index);
     emit turnPointsChanged();
