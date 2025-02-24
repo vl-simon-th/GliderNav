@@ -28,6 +28,8 @@ public:
     Q_INVOKABLE void importAirportsFromCup(const QString &filePath);
     Q_INVOKABLE void importAirportsFromDir(const QDir &dir);
 
+    Q_INVOKABLE void relaodAirports(const QDir &dir);
+
 signals:
     void airportsChanged();
     void sizeChanged();

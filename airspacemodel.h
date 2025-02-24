@@ -28,6 +28,8 @@ public:
     Q_INVOKABLE void importAirspacesFromFile(const QString &filePath);
     Q_INVOKABLE void importAirspacesFromDir(const QDir &dir);
 
+    Q_INVOKABLE void reloadAirspaces(const QDir &dir);
+
 signals:
     void airspacesChanged();
     void sizeChanged();

@@ -117,3 +117,13 @@ void AirspaceModel::importAirspacesFromDir(const QDir &dir)
         importAirspacesFromFile(fileInfo.absoluteFilePath());
     }
 }
+
+void AirspaceModel::reloadAirspaces(const QDir &dir)
+{
+    foreach (Airspace *airspace, airspaces) {
+        airspace->deleteLater();
+    }
+    airspaces.clear();
+    emit airspacesChanged();
+    importAirspacesFromDir(dir);
+}

@@ -57,8 +57,8 @@ Item {
                 source: "icons/glider.svg"
 
                 transform: Rotation {
-                    origin.x: parent.width/2
-                    origin.y: parent.height/2
+                    origin.x: width/2
+                    origin.y: height/2
                     angle: positionSource.position.direction ? positionSource.position.direction : 0
                 }
             }

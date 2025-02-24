@@ -43,7 +43,7 @@ void FlightLogList::importLogsFromDir()
     QDir dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     if (!dir.exists("logs")) {
-        qWarning() << "Logs directory does not exist:" << dir.absoluteFilePath("dir");
+        qWarning() << "Logs directory does not exist:" << dir.absoluteFilePath("logs");
         return;
     }
 

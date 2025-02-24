@@ -125,3 +125,13 @@ void AirportModel::importAirportsFromDir(const QDir &dir)
         importAirportsFromCup(fileInfo.absoluteFilePath());
     }
 }
+
+void AirportModel::relaodAirports(const QDir &dir)
+{
+    foreach (Airport *airport, airports) {
+        airport->deleteLater();
+    }
+    airports.clear();
+    emit airportsChanged();
+    importAirportsFromDir(dir);
+}

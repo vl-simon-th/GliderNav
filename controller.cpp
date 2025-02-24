@@ -10,12 +10,12 @@ Controller::Controller(QObject *parent)
     QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     if(!baseDir.exists()) baseDir.mkpath("./");
 
-    QDir aptDir = QDir(baseDir.filePath("apt"));
+    aptDir = QDir(baseDir.filePath("apt"));
     if(!aptDir.exists()) aptDir.mkpath("./");
     airportModel = new AirportModel(this);
     airportModel->importAirportsFromDir(aptDir);
 
-    QDir asDir = QDir(baseDir.filePath("as"));
+    asDir = QDir(baseDir.filePath("as"));
     if(!asDir.exists()) asDir.mkpath("./");
     airspaceModel = new AirspaceModel(this);
     airspaceModel->importAirspacesFromDir(asDir);
@@ -26,6 +26,11 @@ Controller::Controller(QObject *parent)
 
     airspaceFilterModel = new AirspaceFilterModel(this);
     airspaceFilterModel->setSourceModel(airspaceModel);
+
+    aptNetworkManager = new QNetworkAccessManager(this);
+    connect(aptNetworkManager, &QNetworkAccessManager::finished, this, &Controller::aptFileDownloaded);
+    asNetworkManager = new QNetworkAccessManager(this);
+    connect(asNetworkManager, &QNetworkAccessManager::finished, this, &Controller::asFileDownloaded);
 }
 
 Task *Controller::getCurrentTask() const
@@ -84,6 +89,8 @@ AirspaceFilterModel *Controller::getAirspaceFilterModel() const
     return airspaceFilterModel;
 }
 
+
+
 //does not work for ios :(
 void Controller::copyFilesToApt(const QList<QUrl> &files)
 {
@@ -99,7 +106,7 @@ void Controller::copyFilesToApt(const QList<QUrl> &files)
     airportFilterModel->invalidate();
 }
 
-void Controller::copyFilesToAs(const QList<QUrl> files)
+void Controller::copyFilesToAs(const QList<QUrl> &files)
 {
     QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir asDir = QDir(baseDir.filePath("as"));
@@ -111,4 +118,105 @@ void Controller::copyFilesToAs(const QList<QUrl> files)
     }
 
     airspaceFilterModel->invalidate();
+}
+
+void Controller::downloadAptFile(const QUrl &url)
+{
+    qDebug() << url;
+    QNetworkRequest request(url);
+    aptNetworkManager->get(request);
+}
+
+void Controller::downloadAsFile(const QUrl &url)
+{
+    QNetworkRequest request(url);
+    asNetworkManager->get(request);
+}
+
+void Controller::reloadAirports()
+{
+    airportModel->relaodAirports(aptDir);
+    airportFilterModel->invalidate();
+}
+
+void Controller::reloadAirspaces()
+{
+    airspaceModel->reloadAirspaces(asDir);
+    airspaceFilterModel->invalidate();
+}
+
+//PUBLIC SLOTS
+
+void Controller::aptFileDownloaded(QNetworkReply *reply)
+{
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        // Get the data location path
+        QString dataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        QDir dir(dataLocation);
+        if (!dir.exists("apt"))
+        {
+            dir.mkpath("apt");
+        }
+
+        // Construct the file path
+        QString filePath = dir.filePath("apt/" + QFileInfo(reply->url().path()).fileName());
+        QFile file(filePath);
+
+        // Open the file and write the data
+        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            file.write(reply->readAll());
+            file.close();
+            reloadAirports();
+            qDebug() << "File downloaded successfully to:" << filePath;
+        }
+        else
+        {
+            qWarning() << "Could not open file for writing:" << filePath;
+        }
+    }
+    else
+    {
+        qWarning() << "Download failed:" << reply->errorString();
+    }
+
+    reply->deleteLater();
+}
+
+void Controller::asFileDownloaded(QNetworkReply *reply)
+{
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        // Get the data location path
+        QString dataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        QDir dir(dataLocation);
+        if (!dir.exists("as"))
+        {
+            dir.mkpath("as");
+        }
+
+        // Construct the file path
+        QString filePath = dir.filePath("as/" + QFileInfo(reply->url().path()).fileName());
+        QFile file(filePath);
+
+        // Open the file and write the data
+        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            file.write(reply->readAll());
+            file.close();
+            reloadAirspaces();
+            qDebug() << "File downloaded successfully to:" << filePath;
+        }
+        else
+        {
+            qWarning() << "Could not open file for writing:" << filePath;
+        }
+    }
+    else
+    {
+        qWarning() << "Download failed:" << reply->errorString();
+    }
+
+    reply->deleteLater();
 }

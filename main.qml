@@ -8,10 +8,6 @@ ApplicationWindow {
     visible: true
     title: qsTr("Glider Nav")
 
-    Component.onCompleted: {
-        console.log(visibility)
-    }
-
     SwipeView {
         id: swipeView
         width: parent.width

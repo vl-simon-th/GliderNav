@@ -22,6 +22,10 @@
 #include <QList>
 #include <QUrl>
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
 class Controller : public QObject
 {
     Q_OBJECT
@@ -50,7 +54,17 @@ public:
     AirspaceFilterModel *getAirspaceFilterModel() const;
 
     Q_INVOKABLE void copyFilesToApt(const QList<QUrl> &files);
-    Q_INVOKABLE void copyFilesToAs(const QList<QUrl> files);
+    Q_INVOKABLE void copyFilesToAs(const QList<QUrl> &files);
+
+    Q_INVOKABLE void downloadAptFile(const QUrl &url);
+    Q_INVOKABLE void downloadAsFile(const QUrl &url);
+
+    Q_INVOKABLE void reloadAirports();
+    Q_INVOKABLE void reloadAirspaces();
+
+public slots:
+    void aptFileDownloaded(QNetworkReply *reply);
+    void asFileDownloaded(QNetworkReply *reply);
 
 signals:
 
@@ -78,6 +92,12 @@ private:
     AirspaceFilterModel *airspaceFilterModel;
     Q_PROPERTY(AirportFilterModel *airportFilterModel READ getAirportFilterModel CONSTANT FINAL)
     Q_PROPERTY(AirspaceFilterModel *airspaceFilterModel READ getAirspaceFilterModel CONSTANT FINAL)
+
+    QDir aptDir;
+    QDir asDir;
+
+    QNetworkAccessManager *aptNetworkManager;
+    QNetworkAccessManager *asNetworkManager;
 };
 
 #endif // CONTROLLER_H

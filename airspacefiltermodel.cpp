@@ -5,9 +5,18 @@ AirspaceFilterModel::AirspaceFilterModel(QObject *parent)
     : QSortFilterProxyModel{parent}
 {}
 
-void AirspaceFilterModel::updateValidTypes(const QList<QString> &newValidTypes)
+bool AirspaceFilterModel::validTypesContains(const QString &type)
 {
-    validTypes = newValidTypes;
+    return validTypes.contains(type);
+}
+
+void AirspaceFilterModel::updateValidTypes(const QString &type, bool show)
+{
+    if(show) {
+        validTypes.insert(type);
+    } else {
+        validTypes.remove(type);
+    }
     invalidateFilter();
 }
 

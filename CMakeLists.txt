@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2)
-find_package(Qt6 REQUIRED COMPONENTS Positioning)
+find_package(Qt6 REQUIRED COMPONENTS Positioning Network)
 
 qt_add_executable(GliderNav
     main.cpp
@@ -32,7 +32,13 @@ target_link_libraries(GliderNav PUBLIC
     Qt${QT_VERSION_MAJOR}::Qml
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
+
     Qt${QT_VERSION_MAJOR}::Positioning
+    Qt${QT_VERSION_MAJOR}::Network
+)
+
+set_source_files_properties(AppSettings.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
 )
 
 qt_add_resources(GliderNav "configuration"
@@ -86,6 +92,8 @@ qt_add_qml_module(GliderNav
     SOURCES airspacefiltermodel.h airspacefiltermodel.cpp
 
     NO_RESOURCE_TARGET_PATH
+    QML_FILES AppSettings.qml
+    QML_FILES AsTypeModel.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

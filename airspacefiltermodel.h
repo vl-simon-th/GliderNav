@@ -4,7 +4,7 @@
 #include <QQmlEngine>
 #include <QSortFilterProxyModel>
 
-#include <QList>
+#include <QSet>
 #include <QString>
 #include <QGeoCoordinate>
 #include <QGeoPolygon>
@@ -18,8 +18,10 @@ class AirspaceFilterModel : public QSortFilterProxyModel
 public:
     explicit AirspaceFilterModel(QObject *parent = nullptr);
 
+    Q_INVOKABLE bool validTypesContains(const QString &type);
+
 public slots:
-    void updateValidTypes(const QList<QString> &newValidTypes);
+    void updateValidTypes(const QString &type, bool show);
     void updateViewArea(const QGeoShape &newViewArea);
     void updateZoomLevel(const double &newZoomLevel);
 
@@ -27,7 +29,7 @@ protected:
     bool filterAcceptsRow(int row, const QModelIndex &parent) const override;
 
 private:
-    QList<QString> validTypes = {"A", "B", "C", "D", "E", "F"};
+    QSet<QString> validTypes;
     QGeoShape viewArea;
     QGeoRectangle viewAreaBoundingRect;
     double zoomLevel;
