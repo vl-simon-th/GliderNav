@@ -125,6 +125,8 @@ ListView {
         TaskEditView {
             id: taskEditView
 
+            anchors.fill: root
+
             onClose: taskEditViewLoader.sourceComponent = undefined
         }
     }

@@ -85,7 +85,6 @@ Item {
 
         onClicked: {
             airMap.map.center = positionSource.position.coordinate
-            airMap.map.bearing = 0
         }
     }
 
@@ -151,8 +150,6 @@ Item {
         FlightLog {
             Component.onCompleted: {
                 setStartTimeNow()
-                addPoint(QtPositioning.coordinate(0,0))
-                addPoint(QtPositioning.coordinate(10,0))
             }
         }
     }

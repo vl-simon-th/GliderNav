@@ -1,23 +1,21 @@
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls
 
 ApplicationWindow {
-    width: 320
-    height: 540
+    width: 390
+    height: 844
     visible: true
     title: qsTr("Glider Nav")
 
     Component.onCompleted: {
-        if (Qt.platform.os === "ios") {
-            Qt.callLater(function() {
-                showFullScreen()
-            })
-        }
+        console.log(visibility)
     }
 
     SwipeView {
         id: swipeView
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
 
         interactive: false
 

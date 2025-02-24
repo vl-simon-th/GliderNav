@@ -1,15 +1,38 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 
 project(GliderNav VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Positioning)
+find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Positioning)
 
-qt_standard_project_setup(REQUIRES 6.5)
-
-qt_add_executable(GliderNav WIN32
+qt_add_executable(GliderNav
     main.cpp
+)
+
+# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
+# If you are developing for iOS or macOS you should consider setting an
+# explicit, fixed bundle identifier manually though.
+set_target_properties(GliderNav PROPERTIES
+    MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.visionaryworksstudio.glidernav
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
+    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/GliderNav.entitlements"
+
+    WIN32_EXECUTABLE TRUE
+)
+
+target_link_libraries(GliderNav PUBLIC
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::Qml
+    Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::QuickControls2
+    Qt${QT_VERSION_MAJOR}::Positioning
 )
 
 qt_add_resources(GliderNav "configuration"
@@ -22,65 +45,52 @@ qt_add_qml_module(GliderNav
     URI GliderNav
     VERSION 1.0
     QML_FILES
-        Main.qml
-        QML_FILES MovingMap.qml
-        QML_FILES
-        QML_FILES TasksView.qml
-        QML_FILES LogsView.qml
-        SOURCES task.h task.cpp
-        SOURCES taskslist.h taskslist.cpp
-        SOURCES controller.h controller.cpp
+    main.qml
+        MovingMap.qml
+        TasksView.qml
+        LogsView.qml
+        AirMap.qml
+        SettingsView.qml
+        TaskEditView.qml
 
-        RESOURCES
-            icons/aeroplane-1.svg
-            icons/arrow-left-circle.svg
-            icons/check-circle-1.svg
-            icons/eye.svg
-            icons/gear-1.svg
-            icons/glider.svg
-            icons/location-arrow-right.svg
-            icons/map-marker-1.svg
-            icons/pencil-1.svg
-            icons/play.svg
-            icons/plus.svg
-            icons/refresh-circle-1-clockwise.svg
-            icons/route-1.svg
-            icons/share-2.svg
-            icons/stopwatch.svg
-            icons/trash-3.svg
-            icons/xmark-circle.svg
+    RESOURCES
+        icons/aeroplane-1.svg
+        icons/arrow-left-circle.svg
+        icons/check-circle-1.svg
+        icons/eye.svg
+        icons/gear-1.svg
+        icons/glider.svg
+        icons/location-arrow-right.svg
+        icons/map-marker-1.svg
+        icons/pencil-1.svg
+        icons/play.svg
+        icons/plus.svg
+        icons/refresh-circle-1-clockwise.svg
+        icons/route-1.svg
+        icons/share-2.svg
+        icons/stopwatch.svg
+        icons/trash-3.svg
+        icons/xmark-circle.svg
 
-        SOURCES flightlog.h flightlog.cpp
-        QML_FILES TaskEditView.qml
-        SOURCES flightloglist.h flightloglist.cpp
-        QML_FILES AirMap.qml
-        QML_FILES SettingsView.qml
-        SOURCES airport.h airport.cpp
-        SOURCES airspace.h airspace.cpp
-        SOURCES airportmodel.h airportmodel.cpp
-        SOURCES airspacemodel.h airspacemodel.cpp
-        SOURCES airportfiltermodel.h airportfiltermodel.cpp
-        SOURCES roles.h
-        SOURCES airspacefiltermodel.h airspacefiltermodel.cpp
+    SOURCES task.h task.cpp
+    SOURCES taskslist.h taskslist.cpp
+    SOURCES controller.h controller.cpp
+    SOURCES flightlog.h flightlog.cpp
+    SOURCES flightloglist.h flightloglist.cpp
+    SOURCES airport.h airport.cpp
+    SOURCES airspace.h airspace.cpp
+    SOURCES airportmodel.h airportmodel.cpp
+    SOURCES airspacemodel.h airspacemodel.cpp
+    SOURCES airportfiltermodel.h airportfiltermodel.cpp
+    SOURCES roles.h
+    SOURCES airspacefiltermodel.h airspacefiltermodel.cpp
+
+    NO_RESOURCE_TARGET_PATH
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-set_target_properties(GliderNav PROPERTIES
-    MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_GUI_IDENTIFIER com.visionaryworksstudio.glidernav
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
-)
+set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
 
-target_link_libraries(GliderNav
-    PRIVATE Qt6::Quick
-    PRIVATE Qt6::Positioning
-)
-
-include(GNUInstallDirs)
+#include(GNUInstallDirs)
 install(TARGETS GliderNav
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

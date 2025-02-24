@@ -84,6 +84,7 @@ AirspaceFilterModel *Controller::getAirspaceFilterModel() const
     return airspaceFilterModel;
 }
 
+//does not work for ios :(
 void Controller::copyFilesToApt(const QList<QUrl> &files)
 {
     QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -91,9 +92,8 @@ void Controller::copyFilesToApt(const QList<QUrl> &files)
     if(!aptDir.exists()) aptDir.mkpath("./");
 
     foreach (QUrl file, files) {
-        qDebug()<< file.toLocalFile();
-        qDebug() << QFile::copy(file.toLocalFile(), aptDir.filePath(file.fileName()));
-        airportModel->importAirportsFromCup(file.toLocalFile());
+        QFile::copy(file.toLocalFile(), aptDir.filePath(file.fileName()));
+        airportModel->importAirportsFromCup(aptDir.filePath(file.fileName()));
     }
 
     airportFilterModel->invalidate();
@@ -106,8 +106,7 @@ void Controller::copyFilesToAs(const QList<QUrl> files)
     if(!asDir.exists()) asDir.mkpath("./");
 
     foreach (QUrl file, files) {
-        qDebug()<< file.toLocalFile();
-        qDebug() << QFile::copy(file.toLocalFile(), asDir.filePath(file.fileName()));
+        QFile::copy(file.toLocalFile(), asDir.filePath(file.fileName()));
         airspaceModel->importAirspacesFromFile(asDir.filePath(file.fileName()));
     }
 
