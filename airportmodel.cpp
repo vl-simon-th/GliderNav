@@ -88,6 +88,8 @@ Airport *AirportModel::createAirportFromLine(const QString &line)
     QString freq = fields[10].remove('"');
     QString desc = fields[11].remove('"');
 
+    addAvailableStyle(style);
+
     return new Airport(name, code, country, lat, lon, elev, style, rwdir, rwlen, rwwidth, freq, desc, this);
 }
 
@@ -134,4 +136,26 @@ void AirportModel::relaodAirports(const QDir &dir)
     airports.clear();
     emit airportsChanged();
     importAirportsFromDir(dir);
+}
+
+QList<int> AirportModel::getAvailableStyles() const
+{
+    return availableStyles;
+}
+
+void AirportModel::setAvailableStyles(const QList<int> &newAvailableStyles)
+{
+    if (availableStyles == newAvailableStyles)
+        return;
+    availableStyles = newAvailableStyles;
+    std::sort(availableStyles.begin(), availableStyles.end());
+    emit availableStylesChanged();
+}
+
+void AirportModel::addAvailableStyle(int style)
+{
+    if(availableStyles.contains(style)) return;
+    availableStyles.append(style);
+    std::sort(availableStyles.begin(), availableStyles.end());
+    emit availableStylesChanged();
 }

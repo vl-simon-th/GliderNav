@@ -4,6 +4,7 @@ Controller::Controller(QObject *parent)
     : QObject{parent}
 {
     tasksList = new TasksList(this);
+    tasksList->importTasksFromDir();
     logList = new FlightLogList(this);
     logList->importLogsFromDir();
 

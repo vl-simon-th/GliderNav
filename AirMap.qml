@@ -17,6 +17,7 @@ Item {
     property FlightLog currentFlightLog
 
     signal airportClicked(var coordinate)
+    signal airportDoubleClicked(var coordinate)
 
     Plugin {
         id: osmMapPlugin
@@ -101,7 +102,7 @@ Item {
 
             delegate: MapCircle {
                 center: modelData
-                property double distance : currentTask.distancesToPoint[index] ? currentTask.distancesToPoint[index] : 0
+                property double distance : currentTask ? currentTask.distancesToPoint[index] : 0
 
                 radius: distance ? distance : 0
                 color: "transparent"
@@ -158,6 +159,10 @@ Item {
 
                 onClicked: {
                     airportClicked(airportMapQuickItem.coordinate)
+                }
+
+                onDoubleClicked: {
+                    airportDoubleClicked(airportMapQuickItem.coordinate)
                 }
             }
         }

@@ -92,8 +92,8 @@ qt_add_qml_module(GliderNav
     SOURCES airspacefiltermodel.h airspacefiltermodel.cpp
 
     NO_RESOURCE_TARGET_PATH
+
     QML_FILES AppSettings.qml
-    QML_FILES AsTypeModel.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

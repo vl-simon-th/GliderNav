@@ -20,6 +20,8 @@ public:
     Q_INVOKABLE void addTask(Task *newTask);
     Q_INVOKABLE void removeTask(Task *task);
 
+    Q_INVOKABLE void writeTasksToDir();
+    Q_INVOKABLE void importTasksFromDir();
 signals:
 
     void tasksChanged();

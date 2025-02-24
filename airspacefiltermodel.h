@@ -6,6 +6,7 @@
 
 #include <QSet>
 #include <QString>
+
 #include <QGeoCoordinate>
 #include <QGeoPolygon>
 #include <QGeoRectangle>
@@ -29,7 +30,7 @@ protected:
     bool filterAcceptsRow(int row, const QModelIndex &parent) const override;
 
 private:
-    QSet<QString> validTypes;
+    QSet<QString> validTypes = {"C", "D", "E", "CTR"};
     QGeoShape viewArea;
     QGeoRectangle viewAreaBoundingRect;
     double zoomLevel;

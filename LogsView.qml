@@ -15,6 +15,8 @@ Item {
         id: listView
         anchors.fill: parent
 
+        anchors.margins: 6
+
         model: Controller.logList.logs
 
         property string dateFormat: "dd.MM.yyyy HH:mm:ss"

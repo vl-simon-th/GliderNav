@@ -7,9 +7,18 @@ AirportFilterModel::AirportFilterModel(QObject *parent)
 {
 }
 
-void AirportFilterModel::updateValidStyle(const QList<int> &newValidStyles)
+bool AirportFilterModel::validStylesContains(int style)
 {
-    validStyles = newValidStyles;
+    return validStyles.contains(style);
+}
+
+void AirportFilterModel::updateValidStyle(int style, bool show)
+{
+    if(show) {
+        validStyles.insert(style);
+    } else {
+        validStyles.remove(style);
+    }
     invalidateFilter();
 }
 

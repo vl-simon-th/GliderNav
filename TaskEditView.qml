@@ -49,7 +49,7 @@ Page {
                 }
             }
 
-            checked: task.taskType === 0 ? false : true
+            checked: task && task.taskType === 0 ? false : true
         }
 
         Text {
@@ -81,7 +81,7 @@ Page {
 
         MapItemView {
             id: tpMarkerMapItemView
-            model: task.turnPoints
+            model: task ? task.turnPoints : []
 
             delegate: MapQuickItem {
                 id: tpMarkerMapQuickItem
@@ -100,7 +100,6 @@ Page {
                     }
 
                     onClicked: task.addTurnPoint(tpMarkerMapQuickItem.coordinate, 1000)
-
                     onDoubleClicked: task.removeTurnPoint(tpMarkerMapQuickItem.coordinate)
                 }
             }
@@ -109,8 +108,12 @@ Page {
         }
 
         onAirportClicked: (coordinate) => {
-            task.addTurnPoint(coordinate, 1000)
-        }
+                              task.addTurnPoint(coordinate, 1000)
+                          }
+
+        onAirportDoubleClicked: (coordinate) => {
+                                    task.removeTurnPoint(coordinate)
+                                }
     }
 
     footer: ToolBar {
@@ -149,6 +152,7 @@ Page {
                 onClicked: {
                     if(nameTextField.text !== "") {
                         task.name = nameTextField.text
+                        task.writeToDir()
                         root.close()
                     } else {
                         dialog.open()

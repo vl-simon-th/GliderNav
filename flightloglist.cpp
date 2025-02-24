@@ -65,5 +65,4 @@ void FlightLogList::importLogsFromDir()
     }
 
     emit logsChanged();
-
 }

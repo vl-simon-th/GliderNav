@@ -16,8 +16,10 @@ class AirportFilterModel : public QSortFilterProxyModel
 public:
     explicit AirportFilterModel(QObject *parent = nullptr);
 
+    Q_INVOKABLE bool validStylesContains(int style);
+
 public slots:
-    void updateValidStyle(const QList<int> &newValidStyles);
+    void updateValidStyle(int style, bool show);
     void updateViewArea(const QGeoShape &newViewArea);
     void updateZoomLevel(const double &newZoomLevel);
 
@@ -25,7 +27,7 @@ protected:
     bool filterAcceptsRow(int row, const QModelIndex &parent) const override;
 
 private:
-    QList<int> validStyles = {2,4,5};
+    QSet<int> validStyles = {2,4,5};
     QGeoShape viewArea;
     double zoomLevel;
 };

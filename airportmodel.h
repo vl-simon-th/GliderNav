@@ -30,12 +30,20 @@ public:
 
     Q_INVOKABLE void relaodAirports(const QDir &dir);
 
+    QList<int> getAvailableStyles() const;
+    void setAvailableStyles(const QList<int> &newAvailableStyles);
+    Q_INVOKABLE void addAvailableStyle(int style);
+
 signals:
     void airportsChanged();
     void sizeChanged();
 
+    void availableStylesChanged();
+
 private:
     QList<Airport *> airports;
+    QList<int> availableStyles;
+    Q_PROPERTY(QList<int> availableStyles READ getAvailableStyles WRITE setAvailableStyles NOTIFY availableStylesChanged FINAL)
 };
 
 #endif // AIRPORTMODEL_H

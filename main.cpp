@@ -9,8 +9,6 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QCoreApplication::setAttribute(Qt::AA_QtQuickUseDefaultSizePolicy);
-
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/main.qml"_s);
     QObject::connect(

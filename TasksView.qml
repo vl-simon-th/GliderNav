@@ -27,8 +27,6 @@ ListView {
 
             anchors.fill: parent
 
-            spacing: 8
-
             Text {
                 id: nameText
                 text: task.name
@@ -49,6 +47,9 @@ ListView {
                     root.toMovingMap()
                 }
 
+                Layout.fillHeight: true
+                width: height
+
                 display: AbstractButton.IconOnly
                 icon.source: "icons/share-2.svg"
                 icon.height: 25
@@ -59,9 +60,12 @@ ListView {
                 id: editButton
 
                 onClicked: {
-                    taskEditViewLoader.sourceComponent = taskEditViewComponent
-                    taskEditViewLoader.item.task = task
+                    taskEditView.visible = true
+                    taskEditView.task = task
                 }
+
+                Layout.fillHeight: true
+                width: height
 
                 display: AbstractButton.IconOnly
                 icon.source: "icons/pencil-1.svg"
@@ -73,6 +77,9 @@ ListView {
                 id: deleteButton
 
                 onClicked: Controller.tasksList.removeTask(task)
+
+                Layout.fillHeight: true
+                width: height
 
                 display: AbstractButton.IconOnly
                 icon.source: "icons/trash-3.svg"
@@ -96,8 +103,8 @@ ListView {
         anchors.margins: 8
 
         onClicked: {
-            taskEditViewLoader.sourceComponent = taskEditViewComponent
-            taskEditViewLoader.item.task = taskFactory.createObject()
+            taskEditView.visible = true
+            taskEditView.task = taskFactory.createObject()
         }
 
         Component {
@@ -112,22 +119,14 @@ ListView {
         }
     }
 
-    Loader {
-        id: taskEditViewLoader
-        anchors.fill: parent
+
+    TaskEditView {
+        id: taskEditView
+
+        anchors.fill: root
+        visible: false
         z: 2
 
-        sourceComponent: undefined
-    }
-
-    Component {
-        id: taskEditViewComponent
-        TaskEditView {
-            id: taskEditView
-
-            anchors.fill: root
-
-            onClose: taskEditViewLoader.sourceComponent = undefined
-        }
+        onClose: visible = false
     }
 }

@@ -78,6 +78,8 @@ Airspace *AirspaceModel::createAirspaceFromLine(const QString &line)
         }
     }
 
+    addAvailableType(type);
+
     return new Airspace(type, name, lowerAltitude, upperAltitude, coordinates, this);
 }
 
@@ -126,4 +128,36 @@ void AirspaceModel::reloadAirspaces(const QDir &dir)
     airspaces.clear();
     emit airspacesChanged();
     importAirspacesFromDir(dir);
+}
+
+QList<QString> AirspaceModel::getAvailableTypes() const
+{
+    return availableTypes;
+}
+
+void AirspaceModel::setAvailableTypes(const QList<QString> &newAvailableTypes)
+{
+    if (availableTypes == newAvailableTypes)
+        return;
+    availableTypes = newAvailableTypes;
+    std::sort(availableTypes.begin(), availableTypes.end(), [](const QString &a, const QString &b) {
+        if (a.length() == b.length()) {
+            return a < b; // Alphabetical order
+        }
+        return a.length() < b.length(); // Length order
+    });
+    emit availableTypesChanged();
+}
+
+void AirspaceModel::addAvailableType(const QString &type)
+{
+    if(type == "" || availableTypes.contains(type)) return;
+    availableTypes.append(type);
+    std::sort(availableTypes.begin(), availableTypes.end(), [](const QString &a, const QString &b) {
+        if (a.length() == b.length()) {
+            return a < b; // Alphabetical order
+        }
+        return a.length() < b.length(); // Length order
+    });
+    emit availableTypesChanged();
 }

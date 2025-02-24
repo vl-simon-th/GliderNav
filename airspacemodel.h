@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QQmlEngine>
 #include <QList>
+#include <QString>
 #include <QDir>
 #include "airspace.h"
 
@@ -30,12 +31,20 @@ public:
 
     Q_INVOKABLE void reloadAirspaces(const QDir &dir);
 
+    QList<QString> getAvailableTypes() const;
+    void setAvailableTypes(const QList<QString> &newAvailableTypes);
+    Q_INVOKABLE void addAvailableType(const QString &type);
+
 signals:
     void airspacesChanged();
     void sizeChanged();
 
+    void availableTypesChanged();
+
 private:
     QList<Airspace *> airspaces;
+    QList<QString> availableTypes;
+    Q_PROPERTY(QList<QString> availableTypes READ getAvailableTypes WRITE setAvailableTypes NOTIFY availableTypesChanged FINAL)
 };
 
 #endif // AIRSPACEMODEL_H

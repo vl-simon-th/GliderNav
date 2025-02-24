@@ -30,7 +30,6 @@ Item {
 
         onPositionChanged: {
             if(Controller.currentLog) {
-                Controller.currentLog.setEndTimeNow()
                 Controller.currentLog.writeToDir()
                 Controller.currentLog.addPoint(positionSource.position.coordinate)
             }
@@ -89,9 +88,9 @@ Item {
     }
 
     Button {
-        id: resetLogButton
+        id: stopLogButton
 
-        text: qsTr("Reset Log")
+        text: qsTr("Stop Log")
 
         visible: airMap.currentFlightLog
 
@@ -106,7 +105,7 @@ Item {
 
         MessageDialog {
             id: taskResetDialog
-            text: qsTr("Do you really want to reset the flight log?")
+            text: qsTr("Do you really want to stop the flight log?")
             buttons: MessageDialog.Reset | MessageDialog.Cancel
 
             onButtonClicked: (button, role) => {
@@ -114,8 +113,7 @@ Item {
                     case MessageDialog.Reset:
                         Controller.currentLog.setEndTimeNow()
                         Controller.currentLog.writeToDir()
-                        Controller.currentLog = flightLogFactory.createObject()
-                        Controller.logList.addLog(Controller.currentLog)
+                        Controller.currentLog = null
                 }
             }
         }

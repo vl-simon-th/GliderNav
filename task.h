@@ -9,6 +9,14 @@
 
 #include <QString>
 
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QFile>
+
+#include <QDir>
+#include <QStandardPaths>
+
 enum class TaskType {
     RT,
     AAT
@@ -39,6 +47,10 @@ public:
 
     TaskType getTaskType() const;
     void setTaskType(TaskType newTaskType);
+
+    Q_INVOKABLE void writeToDir();
+    Q_INVOKABLE void deleteDir();
+    static Task *readFromDir(const QDir &dir);
 
 signals:
 

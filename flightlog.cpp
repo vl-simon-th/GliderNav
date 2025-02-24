@@ -42,6 +42,7 @@ void FlightLog::setStartTime(const QDateTime &newStartTime)
 void FlightLog::setStartTimeNow()
 {
     startTime = QDateTime::currentDateTimeUtc();
+    emit startTimeChanged();
 }
 
 QDateTime FlightLog::getEndTime() const
@@ -60,6 +61,7 @@ void FlightLog::setEndTime(const QDateTime &newEndTime)
 void FlightLog::setEndTimeNow()
 {
     endTime = QDateTime::currentDateTimeUtc();
+    emit endTimeChanged();
 }
 
 void FlightLog::writeToDir()
