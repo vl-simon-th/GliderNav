@@ -63,10 +63,14 @@ Page {
         }
     }
 
+    onVisibleChanged: {
+        if(visible) {
+            airMap.fitToTask()
+        }
+    }
+
     AirMap {
         id: airMap
-
-        editTask: true
 
         anchors.fill: parent
         currentTask: task

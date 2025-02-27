@@ -32,6 +32,7 @@ Item {
                 id: userPositionImage
                 source: "icons/glider.svg"
 
+                transformOrigin: Item.Center
                 rotation: airMap.userPos.directionValid ? airMap.rootuserPos.direction : 0
             }
 

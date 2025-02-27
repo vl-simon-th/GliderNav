@@ -12,7 +12,6 @@ Map {
     id: root
 
     property Task currentTask
-    property bool editTask : false
 
     property FlightLog currentFlightLog
 
@@ -119,7 +118,6 @@ Map {
             autoFadeIn: false
 
             sourceItem: AbstractButton {
-                enabled: root.editTask
                 x: height / -2
                 y: height / -2
                 height: root.zoomLevel > 7 ? 40 : 30
@@ -177,6 +175,8 @@ Map {
             MapItemView {
                 id: airspaceDescItemView
 
+                model: ListModel {}
+
                 Component.onCompleted: {
                     var labelDist = 25000
 
@@ -188,22 +188,34 @@ Map {
                         dist += airspacePolyline.path[i].distanceTo(airspacePolyline.path[i+1])
 
                         if(dist > c) {
-                            var ang =
-                            labelModel.push(path[i])
+                            var next = 1;
+                            while (i+next < airspacePolyline.path.length-1 &&
+                                   airspacePolyline.path[i].distanceTo(airspacePolyline.path[i+next]) < 1000) next++;
+
+                            var azimuth = airspacePolyline.path[i].azimuthTo(airspacePolyline.path[i+next]);
+                            var distToNext = airspacePolyline.path[i].distanceTo(airspacePolyline.path[i+next]);
+
+                            airspaceDescItemView.model.append({"coordinate": airspacePolyline.path[i].atDistanceAndAzimuth(distToNext/2, azimuth),
+                                                                  "angle": azimuth + 90})
                             c = dist + labelDist
                         }
                     }
-
-                    model = labelModel
 
                     root.addMapItemView(airspaceDescItemView)
                 }
 
                 delegate: MapQuickItem {
-                    coordinate: modelData
+                    coordinate: model.coordinate
                     sourceItem: Label {
+                        x: width/-2
+                        y: height/-2
                         text: "Description"
                         color: "blue"
+                        transform: Rotation {
+                            origin.x: width/2
+                            origin.y: height/2
+                            //angle: model.angle
+                        }
 
                         visible: root.zoomLevel > 10
                     }
@@ -273,5 +285,9 @@ Map {
         onClicked: {
             root.center = positionSource.position.coordinate
         }
+    }
+
+    function fitToTask() {
+        fitViewportToMapItems({taskPath})
     }
 }

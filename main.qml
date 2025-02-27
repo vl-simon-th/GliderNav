@@ -15,6 +15,8 @@ ApplicationWindow {
 
         interactive: false
 
+        currentIndex: 1
+
         TasksView {
             id: tasksView
             onToMovingMap: swipeView.setCurrentIndex(1)
