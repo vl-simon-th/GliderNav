@@ -75,7 +75,7 @@ Page {
             id: tapHandler
 
             onSingleTapped: {
-                task.addTurnPoint(airMap.map.toCoordinate(tapHandler.point.position), 1000)
+                task.addTurnPoint(airMap.toCoordinate(tapHandler.point.position), 1000)
             }
         }
 
@@ -104,7 +104,7 @@ Page {
                 }
             }
 
-            Component.onCompleted: airMap.map.addMapItemView(tpMarkerMapItemView)
+            Component.onCompleted: airMap.addMapItemView(tpMarkerMapItemView)
         }
 
         onAirportClicked: (coordinate) => {

@@ -94,6 +94,7 @@ qt_add_qml_module(GliderNav
     NO_RESOURCE_TARGET_PATH
 
     QML_FILES AppSettings.qml
+    QML_FILES
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

@@ -116,13 +116,12 @@ Item {
 
         onVisibleChanged: {
             var shape = QtPositioning.polygon(currentFlightLog.path)
-            console.log(shape.boundingGeoRectangle().path)
-            map.visibleRegion = shape.boundingGeoRectangle()
+            visibleRegion = shape.boundingGeoRectangle()
         }
 
         onCurrentFlightLogChanged: {
             var shape = QtPositioning.polygon(currentFlightLog.path)
-            map.visibleRegion = shape.boundingGeoRectangle()
+            visibleRegion = shape.boundingGeoRectangle()
         }
     }
 }

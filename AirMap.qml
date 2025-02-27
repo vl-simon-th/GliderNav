@@ -3,16 +3,16 @@ import QtLocation
 import QtPositioning
 
 import QtQuick.Controls
+import QtQuick.Dialogs
+import QtCore
 
 import GliderNav
 
-Item {
-    id: mapView
+Map {
+    id: root
 
     property Task currentTask
     property bool editTask : false
-
-    property alias map: map
 
     property FlightLog currentFlightLog
 
@@ -24,55 +24,52 @@ Item {
         name: "osm"
     }
 
-    Map {
-        id: map
-        anchors.fill: parent
-        //center: QtPositioning.coordinate(59.91, 10.75) // Oslo
-        zoomLevel: 14
-        property geoCoordinate startCentroid
+    //center: QtPositioning.coordinate(59.91, 10.75) // Oslo
+    center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
+    zoomLevel: 14
+    property geoCoordinate startCentroid
 
-        PinchHandler {
-            id: pinch
-            target: null
-            onActiveChanged: if (active) {
-                map.startCentroid = map.toCoordinate(pinch.centroid.position, false)
-            }
-            onScaleChanged: (delta) => {
-                map.zoomLevel += Math.log2(delta)
-                map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
-            }
-            grabPermissions: PointerHandler.CanTakeOverFromAnything
+    PinchHandler {
+        id: pinch
+        target: null
+        onActiveChanged: if (active) {
+            root.startCentroid = root.toCoordinate(pinch.centroid.position, false)
         }
-        WheelHandler {
-            id: wheel
-            // workaround for QTBUG-87646 / QTBUG-112394 / QTBUG-112432:
-            // Magic Mouse pretends to be a trackpad but doesn't work with PinchHandler
-            // and we don't yet distinguish mice and trackpads on Wayland either
-            acceptedDevices: Qt.platform.pluginName === "cocoa" || Qt.platform.pluginName === "wayland"
-                             ? PointerDevice.Mouse | PointerDevice.TouchPad
-                             : PointerDevice.Mouse
-            rotationScale: 1/120
-            property: "zoomLevel"
+        onScaleChanged: (delta) => {
+            root.zoomLevel += Math.log2(delta)
+            root.alignCoordinateToPoint(root.startCentroid, pinch.centroid.position)
         }
-        DragHandler {
-            id: drag
-            target: null
-            onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
-        }
-        Shortcut {
-            enabled: map.zoomLevel < map.maximumZoomLevel
-            sequence: StandardKey.ZoomIn
-            onActivated: map.zoomLevel = Math.round(map.zoomLevel + 1)
-        }
-        Shortcut {
-            enabled: map.zoomLevel > map.minimumZoomLevel
-            sequence: StandardKey.ZoomOut
-            onActivated: map.zoomLevel = Math.round(map.zoomLevel - 1)
-        }
+        grabPermissions: PointerHandler.CanTakeOverFromAnything
+    }
+    WheelHandler {
+        id: wheel
+        // workaround for QTBUG-87646 / QTBUG-112394 / QTBUG-112432:
+        // Magic Mouse pretends to be a trackpad but doesn't work with PinchHandler
+        // and we don't yet distinguish mice and trackpads on Wayland either
+        acceptedDevices: Qt.platform.pluginName === "cocoa" || Qt.platform.pluginName === "wayland"
+                         ? PointerDevice.Mouse | PointerDevice.TouchPad
+                         : PointerDevice.Mouse
+        rotationScale: 1/120
+        property: "zoomLevel"
+    }
+    DragHandler {
+        id: drag
+        target: null
+        onTranslationChanged: (delta) => root.pan(-delta.x, -delta.y)
+    }
+    Shortcut {
+        enabled: root.zoomLevel < root.maximumZoomLevel
+        sequence: StandardKey.ZoomIn
+        onActivated: root.zoomLevel = Math.round(root.zoomLevel + 1)
+    }
+    Shortcut {
+        enabled: zoomLevel > minimumZoomLevel
+        sequence: StandardKey.ZoomOut
+        onActivated: root.zoomLevel = Math.round(root.zoomLevel - 1)
     }
 
-    map.plugin: osmMapPlugin
-    map.copyrightsVisible: false
+    plugin: osmMapPlugin
+    copyrightsVisible: false
 
     MapPolyline {
         id: flightLogMapPolyline
@@ -81,8 +78,6 @@ Item {
 
         line.color: "green"
         line.width: 4
-
-        Component.onCompleted: mapView.map.addMapItem(flightLogMapPolyline)
     }
 
     MapItemGroup {
@@ -102,17 +97,15 @@ Item {
 
             delegate: MapCircle {
                 center: modelData
-                property double distance : currentTask ? currentTask.distancesToPoint[index] : 0
+                property double distance : root.currentTask ? root.currentTask.distancesToPoint[index] : 0
 
-                radius: distance ? distance : 0
+                radius: distance
                 color: "transparent"
 
                 border.color: "red"
                 border.width: 2
             }
         }
-
-        Component.onCompleted: mapView.map.addMapItemGroup(taskMapItemGroup)
     }
 
     MapItemView {
@@ -126,10 +119,10 @@ Item {
             autoFadeIn: false
 
             sourceItem: AbstractButton {
-                enabled: mapView.editTask
+                enabled: root.editTask
                 x: height / -2
                 y: height / -2
-                height: mapView.map.zoomLevel > 7 ? 40 : 30
+                height: root.zoomLevel > 7 ? 40 : 30
                 width: height
                 Rectangle {
                     anchors.centerIn: parent
@@ -137,7 +130,7 @@ Item {
                     width: height
                     color: "transparent"
                     border.color: "black"
-                    border.width: mapView.map.zoomLevel > 7 ? 4 : 2
+                    border.width: root.zoomLevel > 7 ? 4 : 2
 
                     radius: height/2
                 }
@@ -148,7 +141,7 @@ Item {
                     width: parent.width / 4.5
                     color: "transparent"
                     border.color: "black"
-                    border.width: mapView.map.zoomLevel > 7 ? 3 : 1.5
+                    border.width: root.zoomLevel > 7 ? 3 : 1.5
                 }
 
                 transform: Rotation {
@@ -166,42 +159,119 @@ Item {
                 }
             }
         }
-
-        Component.onCompleted: mapView.map.addMapItemView(airportMapItemView)
     }
 
 
     MapItemView {
-        id: airspaceMapItemView
+        id: airspacesItemView
+
         model: Controller.airspaceFilterModel
 
         delegate: MapPolyline {
-            path: model.coordinates
+            id: airspacePolyline
+            line.color: "blue"
             line.width: 1.5
-            line.color: model.type === "C" || model.type === "D" ? "red" : "blue"
+
+            path: model.coordinates
+
+            MapItemView {
+                id: airspaceDescItemView
+
+                Component.onCompleted: {
+                    var labelDist = 25000
+
+                    var dist = 0
+                    var c = 0
+
+                    var labelModel = []
+                    for(var i = 0; i < airspacePolyline.path.length - 1; i++) {
+                        dist += airspacePolyline.path[i].distanceTo(airspacePolyline.path[i+1])
+
+                        if(dist > c) {
+                            var ang =
+                            labelModel.push(path[i])
+                            c = dist + labelDist
+                        }
+                    }
+
+                    model = labelModel
+
+                    root.addMapItemView(airspaceDescItemView)
+                }
+
+                delegate: MapQuickItem {
+                    coordinate: modelData
+                    sourceItem: Label {
+                        text: "Description"
+                        color: "blue"
+
+                        visible: root.zoomLevel > 10
+                    }
+                }
+            }
         }
-
-        Component.onCompleted: mapView.map.addMapItemView(airspaceMapItemView)
     }
 
-    map.onZoomLevelChanged: {
-        Controller.airportFilterModel.updateZoomLevel(map.zoomLevel);
-        Controller.airspaceFilterModel.updateZoomLevel(map.zoomLevel);
+    onZoomLevelChanged: {
+        Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
+        Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);
 
-        Controller.airportFilterModel.updateViewArea(map.visibleRegion);
-        Controller.airspaceFilterModel.updateViewArea(map.visibleRegion);
+        Controller.airportFilterModel.updateViewArea(root.visibleRegion);
+        Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
     }
 
-    map.onCenterChanged: {
-        Controller.airportFilterModel.updateViewArea(map.visibleRegion);
-        Controller.airspaceFilterModel.updateViewArea(map.visibleRegion);
+    onCenterChanged: {
+        Controller.airportFilterModel.updateViewArea(root.visibleRegion);
+        Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
     }
 
     Component.onCompleted: {
-        Controller.airportFilterModel.updateZoomLevel(map.zoomLevel);
-        Controller.airspaceFilterModel.updateZoomLevel(map.zoomLevel);
+        Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
+        Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);
 
-        Controller.airportFilterModel.updateViewArea(map.visibleRegion);
-        Controller.airspaceFilterModel.updateViewArea(map.visibleRegion);
+        Controller.airportFilterModel.updateViewArea(root.visibleRegion);
+        Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+    }
+
+    LocationPermission {
+        id: permission
+        accuracy: LocationPermission.Precise
+        availability: LocationPermission.WhenInUse
+
+        Component.onCompleted: {
+            if(permission.status !== Qt.Granted) {
+                permission.request()
+            }
+        }
+    }
+
+    signal positionChanged(var pos)
+    PositionSource {
+        id: positionSource
+        updateInterval: 3000
+        active: permission.status === Qt.Granted
+
+        onPositionChanged: {
+            root.positionChanged(positionSource.position)
+        }
+    }
+
+    Button {
+        id: centerButton
+
+        text: qsTr("Center")
+
+        display: AbstractButton.IconOnly
+        icon.source: "icons/location-arrow-right.svg"
+        icon.height: 30
+        icon.width: 30
+
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 8
+
+        onClicked: {
+            root.center = positionSource.position.coordinate
+        }
     }
 }

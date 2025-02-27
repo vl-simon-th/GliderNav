@@ -13,6 +13,7 @@ Flickable {
     flickableDirection: Flickable.VerticalFlick
 
     ColumnLayout {
+        id: mainLayout
         anchors.fill: parent
         anchors.margins: 6
 
@@ -39,7 +40,7 @@ Flickable {
 
             clip: true
 
-            interactive: false
+            interactive: true
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -75,7 +76,7 @@ Flickable {
 
             clip: true
 
-            interactive: false
+            interactive: true
 
             Layout.fillWidth: true
             Layout.fillHeight: true

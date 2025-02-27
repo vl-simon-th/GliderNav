@@ -11,31 +11,6 @@ import GliderNav
 Item {
     id: root
 
-    LocationPermission {
-        id: permission
-        accuracy: LocationPermission.Precise
-        availability: LocationPermission.WhenInUse
-
-        Component.onCompleted: {
-            if(permission.status !== Qt.Granted) {
-                permission.request()
-            }
-        }
-    }
-
-    PositionSource {
-        id: positionSource
-        updateInterval: 3000
-        active: permission.status === Qt.Granted
-
-        onPositionChanged: {
-            if(Controller.currentLog) {
-                Controller.currentLog.writeToDir()
-                Controller.currentLog.addPoint(positionSource.position.coordinate)
-            }
-        }
-    }
-
     AirMap {
         id: airMap
 
@@ -44,10 +19,12 @@ Item {
         currentTask: Controller.currentTask
         currentFlightLog: Controller.currentLog
 
+        property Position userPos : Position{}
+
         MapQuickItem {
             id: userPositionMapQuickItem
 
-            coordinate: positionSource.position.coordinate
+            coordinate: airMap.userPos.coordinate
 
             sourceItem: Image {
                 x: width/-2
@@ -55,35 +32,18 @@ Item {
                 id: userPositionImage
                 source: "icons/glider.svg"
 
-                transform: Rotation {
-                    origin.x: width/2
-                    origin.y: height/2
-                    angle: positionSource.position.direction ? positionSource.position.direction : 0
-                }
+                rotation: airMap.userPos.directionValid ? airMap.rootuserPos.direction : 0
             }
 
-            Component.onCompleted: airMap.map.addMapItem(userPositionMapQuickItem)
+            Component.onCompleted: airMap.addMapItem(userPositionMapQuickItem)
         }
 
-        Component.onCompleted: map.center = positionSource.position.coordinate
-    }
-
-    Button {
-        id: centerButton
-
-        text: qsTr("Center")
-
-        display: AbstractButton.IconOnly
-        icon.source: "icons/location-arrow-right.svg"
-        icon.height: 30
-        icon.width: 30
-
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.margins: 8
-
-        onClicked: {
-            airMap.map.center = positionSource.position.coordinate
+        onPositionChanged: function(pos) {
+            userPos = pos
+            if(Controller.currentLog) {
+                Controller.currentLog.writeToDir()
+                Controller.currentLog.addPoint(pos)
+            }
         }
     }
 
@@ -153,7 +113,7 @@ Item {
     }
 
     Component.onDestruction: {
-        if(Controller.currentLog) {
+        if(false && Controller.currentLog) {
             Controller.currentLog.setEndTimeNow()
             Controller.currentLog.writeToDir()
         }
