@@ -61,6 +61,8 @@ public:
 
     QGeoRectangle getGeoBoundingRect() const;
 
+    Q_INVOKABLE static QString unitToString(AltitudeUnit unit);
+
 signals:
     void typeChanged();
     void nameChanged();

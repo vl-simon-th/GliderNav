@@ -45,5 +45,43 @@ bool AirspaceFilterModel::filterAcceptsRow(int row, const QModelIndex &parent) c
 
     QGeoRectangle asBoundingRect = idx.data(Roles::GeoBoundingRect).value<QGeoRectangle>();
 
-    return asBoundingRect.intersects(viewAreaBoundingRect);
+    //check if visible possible
+    if(!asBoundingRect.intersects(viewAreaBoundingRect))
+        return false;
+
+
+    //check if actually visible
+    bool pathIntersectsViewArea = false;
+
+    QList<QGeoCoordinate> coords = idx.data(Roles::CoordinatesRole).value<QList<QGeoCoordinate>>();
+    foreach(QGeoCoordinate p, coords) {
+        if(viewAreaBoundingRect.contains(p)) {
+            pathIntersectsViewArea = true;
+            break;
+        }
+    }
+
+    int i = 0;
+    while (!pathIntersectsViewArea && i < coords.length() - 1) {
+        bool c1Top = coords[i].latitude() > viewAreaBoundingRect.topLeft().latitude();
+        bool c1Bottom = coords[i].latitude() < viewAreaBoundingRect.bottomRight().latitude();
+        bool c1Right = coords[i].longitude() > viewAreaBoundingRect.bottomRight().longitude();
+        bool c1Left = coords[i].longitude() < viewAreaBoundingRect.topLeft().longitude();
+
+        bool c2Top = coords[i + 1].latitude() > viewAreaBoundingRect.topLeft().latitude();
+        bool c2Bottom = coords[i + 1].latitude() < viewAreaBoundingRect.bottomRight().latitude();
+        bool c2Right = coords[i + 1].longitude() > viewAreaBoundingRect.bottomRight().longitude();
+        bool c2Left = coords[i + 1].longitude() < viewAreaBoundingRect.topLeft().longitude();
+
+        if ((c1Top && !c2Top && !(c1Right && c2Right) && !(c1Left && c2Left)) ||
+            (c1Right && !c2Right && !(c1Top && c2Top) && !(c1Bottom && c2Bottom)) ||
+            (c1Bottom && !c2Bottom && !(c1Right && c2Right) && !(c1Left && c2Left)) ||
+            (c1Left && !c2Left && !(c1Top && c2Top) && !(c1Bottom && c2Bottom))) {
+            pathIntersectsViewArea = true;
+        }
+
+        i++;
+    }
+
+    return pathIntersectsViewArea;
 }

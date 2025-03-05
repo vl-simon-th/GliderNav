@@ -62,6 +62,8 @@ public:
     Q_INVOKABLE void reloadAirports();
     Q_INVOKABLE void reloadAirspaces();
 
+    Q_INVOKABLE static QString unitToString(AltitudeUnit unit);
+
 public slots:
     void aptFileDownloaded(QNetworkReply *reply);
     void asFileDownloaded(QNetworkReply *reply);

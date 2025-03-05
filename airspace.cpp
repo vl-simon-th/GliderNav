@@ -106,6 +106,22 @@ QGeoRectangle Airspace::getGeoBoundingRect() const
     return geoBoundingRect;
 }
 
+QString Airspace::unitToString(AltitudeUnit unit)
+{
+    switch (unit) {
+    case AltitudeUnit::FL:
+        return "FL";
+    case AltitudeUnit::GND:
+        return "GND";
+    case AltitudeUnit::MSL:
+        return "MSL";
+    case AltitudeUnit::UNKNOWN:
+        return "UNKNOWN";
+    default:
+        return "";
+    }
+}
+
 double Airspace::parseAltitude(const QString &altitudeString, AltitudeUnit &unit) const {
     if (altitudeString.endsWith("GND")) {
         unit = AltitudeUnit::GND;

@@ -147,5 +147,31 @@ Flickable {
                 }
             }
         }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            Layout.maximumHeight: 25
+
+            Label {
+                id: mapTypeLabel
+                text: qsTr("Map Type")
+
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
+            SpinBox {
+                id: mapTypeSpinBox
+                from: 0
+                to: 5
+                value: AppSettings.mapTypeIndex
+
+                onValueChanged: AppSettings.mapTypeIndex = value
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
+        }
+
+
     }
 }

@@ -146,6 +146,11 @@ void Controller::reloadAirspaces()
     airspaceFilterModel->invalidate();
 }
 
+QString Controller::unitToString(AltitudeUnit unit)
+{
+    return Airspace::unitToString(unit);
+}
+
 //PUBLIC SLOTS
 
 void Controller::aptFileDownloaded(QNetworkReply *reply)

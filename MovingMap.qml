@@ -32,8 +32,11 @@ Item {
                 id: userPositionImage
                 source: "icons/glider.svg"
 
-                transformOrigin: Item.Center
-                rotation: airMap.userPos.directionValid ? airMap.rootuserPos.direction : 0
+                transform: Rotation{
+                    origin.x: width/2
+                    origin.y: height/2
+                    angle: airMap.userPos.direction ? airMap.userPos.direction : 0
+                }
             }
 
             Component.onCompleted: airMap.addMapItem(userPositionMapQuickItem)
