@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="30mm"
+   height="14mm"
+   viewBox="0 0 30 14"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   sodipodi:docname="glider.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     inkscape:zoom="2.71529"
+     inkscape:cx="73.288672"
+     inkscape:cy="77.892231"
+     inkscape:window-width="1360"
+     inkscape:window-height="946"
+     inkscape:window-x="225"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" /><defs
+     id="defs1" /><g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline"><path
+       style="fill:#000000;fill-opacity:1;stroke-width:0.0305423"
+       d="M 0.221204,4.4300085 14.383567,4.3713936 14.389667,2.7951144 14.535423,1.3243023 14.760125,0.433629 14.881578,0.14062682 14.930158,0.04687561 14.984818,0 h 0.06073 l 0.08501,0.1875198 0.139686,0.34571578 0.139675,0.48050662 0.07895,0.4746442 0.07288,0.6328472 0.04251,0.3574582 0.01822,1.8985612 14.171419,0.063591 0.0644,0.024868 0.07301,0.087008 0.04293,0.1284472 0.02577,0.091146 v 0.5137865 l -3.737555,0.503359 -2.040547,0.292996 -2.98794,0.2695511 -5.162078,0.4805067 -0.388687,0.070303 -0.206488,0.1289283 -0.01219,0.1875137 -0.242919,5.5668065 2.332049,0.33985 0.09716,0.04687 0.03645,0.117187 v 0.550807 l -2.526396,0.152382 -0.31275,0.003 L 14.334373,14 12.307463,13.859129 v -0.580084 l 0.05153,-0.0746 0.09447,-0.058 0.137418,-0.02486 L 14.798142,12.78182 14.531904,7.1135104 14.446024,6.9809243 14.179773,6.8814925 11.371303,6.583154 7.386194,6.2433886 5.857424,6.0859292 2.585171,5.6301447 0.01718,5.2903874 0,4.7102946 0.05153,4.6025574 0.11165,4.5114217 0.12883,4.4782675 Z"
+       id="path1" /></g></svg>
