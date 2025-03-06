@@ -19,7 +19,6 @@ Map {
     signal airportDoubleClicked(var coordinate)
 
     signal updateAsLabels()
-    property int oldZoomLevel : 0
 
     Plugin {
         id: osmMapPlugin
@@ -35,8 +34,13 @@ Map {
     PinchHandler {
         id: pinch
         target: null
-        onActiveChanged: if (active) {
-            root.startCentroid = root.toCoordinate(pinch.centroid.position, false)
+        onActiveChanged: {
+            if (active) {
+                root.startCentroid = root.toCoordinate(pinch.centroid.position, false)
+            } else {
+                airspaceDescItemView.model.clear()
+                root.updateAsLabels()
+            }
         }
         onScaleChanged: (delta) => {
             root.zoomLevel += Math.log2(delta)
@@ -54,21 +58,41 @@ Map {
                          : PointerDevice.Mouse
         rotationScale: 1/120
         property: "zoomLevel"
+        onActiveChanged: {
+            if(!active) {
+                airspaceDescItemView.model.clear()
+                root.updateAsLabels()
+            }
+        }
     }
     DragHandler {
         id: drag
         target: null
         onTranslationChanged: (delta) => root.pan(-delta.x, -delta.y)
+        onActiveChanged: {
+            if(!active) {
+                airspaceDescItemView.model.clear()
+                root.updateAsLabels()
+            }
+        }
     }
     Shortcut {
         enabled: root.zoomLevel < root.maximumZoomLevel
         sequence: StandardKey.ZoomIn
-        onActivated: root.zoomLevel = Math.round(root.zoomLevel + 1)
+        onActivated: {
+            root.zoomLevel = Math.round(root.zoomLevel + 1)
+            airspaceDescItemView.model.clear()
+            root.updateAsLabels()
+        }
     }
     Shortcut {
         enabled: zoomLevel > minimumZoomLevel
         sequence: StandardKey.ZoomOut
-        onActivated: root.zoomLevel = Math.round(root.zoomLevel - 1)
+        onActivated: {
+            root.zoomLevel = Math.round(root.zoomLevel - 1)
+            airspaceDescItemView.model.clear()
+            root.updateAsLabels()
+        }
     }
 
     plugin: osmMapPlugin
@@ -223,6 +247,8 @@ Map {
 
                     var dist = 0;
                     var next = labelPixelDist;
+
+                    var boundingRect = root.visibleRegion.boundingGeoRectangle()
                     for(var i = 0; i < airspacePolyline.path.length-1; i++) {
                         var p1 = root.fromCoordinate(airspacePolyline.path[i], false)
                         var p2 = root.fromCoordinate(airspacePolyline.path[i+1], false)
@@ -235,17 +261,19 @@ Map {
                         if(dist > next) {
                             var occurrences = Math.ceil((dist-next)/labelPixelDist)
 
-                            for(var j = 1; j < occurrences+1; j++) {
-                                var p = Qt.point(p1.x + dx*j/(occurrences+1), p1.y + dy*j/(occurrences+1))
+                            if(boundingRect.intersects(QtPositioning.rectangle([airspacePolyline.path[i], airspacePolyline.path[i+1]]))) {
+                                for(var j = 1; j < occurrences+1; j++) {
+                                    var p = Qt.point(p1.x + dx*j/(occurrences+1), p1.y + dy*j/(occurrences+1))
 
-                                var pos = root.toCoordinate(p, root.zoomLevel > 13);
-                                if(pos.isValid) {
-                                    var azimuth = airspacePolyline.path[i].azimuthTo(airspacePolyline.path[i+1]);
+                                    var pos = root.toCoordinate(p, false);
+                                    if(pos.isValid) {
+                                        var azimuth = airspacePolyline.path[i].azimuthTo(airspacePolyline.path[i+1]);
 
-                                    labelModel.push({"pos": pos, "angle": azimuth + 90,
-                                            "text": airspacePolyline.upperAltitude + " " + Controller.unitToString(airspacePolyline.upperAltitudeUnits) + "\n" +
-                                            airspacePolyline.lowerAltitude + " " + Controller.unitToString(airspacePolyline.lowerAltitudeUnits) + "\n" +
-                                            airspacePolyline.type})
+                                        labelModel.push({"pos": pos, "angle": azimuth + 90,
+                                                "text": airspacePolyline.upperAltitude + " " + Controller.unitToString(airspacePolyline.upperAltitudeUnits) + "\n" +
+                                                airspacePolyline.lowerAltitude + " " + Controller.unitToString(airspacePolyline.lowerAltitudeUnits) + "\n" +
+                                                airspacePolyline.type})
+                                    }
                                 }
                             }
 
@@ -276,22 +304,11 @@ Map {
 
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
-
-        if(Math.abs(root.zoomLevel - root.oldZoomLevel) > 0.75) {
-            airspaceDescItemView.model.clear()
-            updateAsLabels()
-            oldZoomLevel = zoomLevel
-        }
     }
 
     onCenterChanged: {
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
-
-        if(zoomLevel > 13) {
-            airspaceDescItemView.model.clear()
-            updateAsLabels()
-        }
     }
 
     Component.onCompleted: {
@@ -300,8 +317,6 @@ Map {
 
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
-
-        oldZoomLevel = zoomLevel
     }
 
     LocationPermission {
