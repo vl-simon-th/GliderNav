@@ -124,7 +124,7 @@ Map {
 
             delegate: MapCircle {
                 center: modelData
-                property double distance : root.currentTask ? root.currentTask.distancesToPoint[index] : 0
+                property double distance : root.currentTask && root.currentTask.distancesToPoint[index] ? root.currentTask.distancesToPoint[index] : 0
 
                 radius: distance
                 color: "transparent"

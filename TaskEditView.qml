@@ -13,10 +13,23 @@ Page {
     property Task task : Task{}
     signal close()
 
-    header: RowLayout {
-        spacing: 6
+    GridLayout {
+        id: topLayout
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        rows: 2
+        columns: 4
+        rowSpacing: 0
+        columnSpacing: 6
+
+        z: 3
+
         TextField {
             id: nameTextField
+
+            Layout.row: 0
+            Layout.column: 0
 
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -24,21 +37,39 @@ Page {
             text: task ? task.name : ""
 
             placeholderText: qsTr("Enter Task Name")
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.leftMargin: -topLayout.columnSpacing
+                color: "white"
+                z: -1
+            }
         }
 
         Text {
             id: aatText
 
+            Layout.row: 0
+            Layout.column: 1
             Layout.fillHeight: true
 
             text: qsTr("AAT")
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.leftMargin: -topLayout.columnSpacing
+                color: "white"
+                z: -1
+            }
         }
 
         Switch {
             id: taskTypeSwitch
 
+            Layout.row: 0
+            Layout.column: 2
             Layout.fillHeight: true
 
             onCheckedChanged: {
@@ -50,16 +81,86 @@ Page {
             }
 
             checked: task && task.taskType === 0 ? false : true
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.leftMargin: -topLayout.columnSpacing
+                color: "white"
+                z: -1
+            }
         }
 
         Text {
             id: rtText
 
+            Layout.row: 0
+            Layout.column: 3
             Layout.fillHeight: true
 
             text: qsTr("RT")
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.leftMargin: -topLayout.columnSpacing
+                color: "white"
+                z: -1
+            }
+        }
+
+        ListView {
+            id: aatDistancesListView
+
+            interactive: false
+
+            Layout.row: 1
+            Layout.column: 1
+            Layout.columnSpan: 3
+
+            Layout.fillWidth: true
+            Layout.leftMargin: -parent.columnSpacing
+
+            height: count * 30
+
+            model: task.distancesToPoint
+
+            visible: task.taskType === 0
+
+            delegate: RowLayout {
+                spacing: 0
+                Text {
+                    id: indexText
+                    text: model.index
+                    font.pointSize: 11
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+
+                    Layout.fillHeight: true
+
+                    Layout.minimumWidth: height
+
+                    Rectangle {
+                        color: "white"
+                        anchors.fill: parent
+                        z:-1
+                    }
+                }
+                TextField {
+                    id: distanceTextField
+                    text: modelData
+
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
+                    onAccepted: task.distancesToPoint[model.index] = text
+
+                    Rectangle {
+                        color: "white"
+                        anchors.fill: parent
+                        z: -1
+                    }
+                }
+            }
         }
     }
 
