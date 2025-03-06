@@ -17,7 +17,9 @@ Map {
 
     signal airportClicked(var coordinate)
     signal airportDoubleClicked(var coordinate)
+
     signal updateAsLabels()
+    property int oldZoomLevel : 0
 
     Plugin {
         id: osmMapPlugin
@@ -28,7 +30,6 @@ Map {
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 14
     activeMapType: supportedMapTypes[AppSettings.mapTypeIndex]
-    //activeMapType: MapType.TerrainMap
     property geoCoordinate startCentroid
 
     PinchHandler {
@@ -58,7 +59,6 @@ Map {
         id: drag
         target: null
         onTranslationChanged: (delta) => root.pan(-delta.x, -delta.y)
-        onActiveChanged: if(!active) root.updateAsLabels()
     }
     Shortcut {
         enabled: root.zoomLevel < root.maximumZoomLevel
@@ -163,6 +163,37 @@ Map {
         }
     }
 
+    MapItemView {
+        id: airspaceDescItemView
+
+        model: ListModel {}
+
+        delegate: MapQuickItem {
+
+            coordinate: model.pos
+
+            sourceItem: Text {
+                x: -width/2
+                y: 0
+                text: model.text
+                font.pointSize: 10
+                horizontalAlignment: Text.AlignHCenter
+                color: "blue"
+                transform: Rotation {
+                    origin.x: width/2
+                    origin.y: 0
+                    angle: model.angle
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    z: -3
+                    color: "orange"
+                    opacity: 0.7
+                }
+            }
+        }
+    }
 
     MapItemView {
         id: airspacesItemView
@@ -184,104 +215,56 @@ Map {
 
             path: coordinates
 
-            referenceSurface: QtLocation.ReferenceSurface.Map
+            function updateLabelModel() {
+                var labelModel = []
 
-            MapItemView {
-                id: airspaceDescItemView
+                if(root.zoomLevel > 10) {
+                    var labelPixelDist = 400
 
-                model: ListModel {}
+                    var dist = 0;
+                    var next = labelPixelDist;
+                    for(var i = 0; i < airspacePolyline.path.length-1; i++) {
+                        var p1 = root.fromCoordinate(airspacePolyline.path[i], false)
+                        var p2 = root.fromCoordinate(airspacePolyline.path[i+1], false)
 
-                add: Transition {}
-                remove: Transition {}
+                        var dx = p2.x - p1.x
+                        var dy = p2.y - p1.y
 
-                delegate: MapQuickItem {
-                    parent: root
-                    zoomLevel: 0
-                    coordinate: model.coordinate
-                    sourceItem: Text {
-                        x: width/-2
-                        y: 0
-                        text: airspacePolyline.upperAltitude + " " + Controller.unitToString(airspacePolyline.upperAltitudeUnits) + "\n" +
-                              airspacePolyline.lowerAltitude + " " + Controller.unitToString(airspacePolyline.lowerAltitudeUnits) + "\n" +
-                              airspacePolyline.type
-                        font.pointSize: 10
-                        horizontalAlignment: Text.AlignHCenter
-                        color: "blue"
-                        transform: Rotation {
-                            origin.x: width/2
-                            origin.y: 0
-                            angle: model.angle
-                        }
+                        dist += Math.sqrt(dx**2 + dy**2)
 
-                        visible: root.zoomLevel > 10
+                        if(dist > next) {
+                            var occurrences = Math.ceil((dist-next)/labelPixelDist)
 
-                        Rectangle {
-                            anchors.fill: parent
-                            z: -3
-                            color: "orange"
-                            opacity: 0.7
-                        }
-                    }
-                }
+                            for(var j = 1; j < occurrences+1; j++) {
+                                var p = Qt.point(p1.x + dx*j/(occurrences+1), p1.y + dy*j/(occurrences+1))
 
-                function updateLabelModel() {
-                    var labelModel = []
+                                var pos = root.toCoordinate(p, root.zoomLevel > 13);
+                                if(pos.isValid) {
+                                    var azimuth = airspacePolyline.path[i].azimuthTo(airspacePolyline.path[i+1]);
 
-                    if(root.zoomLevel > 8) {
-                        var last = 0;
-                        for(var i = 1; i < airspacePolyline.path.length; i++) {
-
-                            if(airspacePolyline.path[i-1].distanceTo(airspacePolyline.path[i]) > 10000) last = i-1;
-
-                            var p1 = root.fromCoordinate(airspacePolyline.path[last], false)
-                            var p2 = root.fromCoordinate(airspacePolyline.path[i], false)
-
-                            var dx = p2.x - p1.x
-                            var dy = p2.y - p1.y
-
-                            var occurrences = Math.floor(Math.sqrt((dx**2) + (dy**2)) / 250) //200 = distance in pixels
-                            if(occurrences > 0) {
-                                for(var j = 1; j < occurrences+1; j++) {
-                                    var p = Qt.point(p1.x + dx*j/(occurrences+1), p1.y + dy*j/(occurrences+1))
-
-                                    var labelGeoPoint = root.toCoordinate(p, occurrences>10) //if there are more than 10 occurrences, only render visible
-
-                                    if(labelGeoPoint.isValid) {
-                                        var azimuth = airspacePolyline.path[last].azimuthTo(airspacePolyline.path[i]);
-
-                                        labelModel.push({"coordinate": labelGeoPoint, "angle": azimuth + 90})
-                                    }
+                                    labelModel.push({"pos": pos, "angle": azimuth + 90,
+                                            "text": airspacePolyline.upperAltitude + " " + Controller.unitToString(airspacePolyline.upperAltitudeUnits) + "\n" +
+                                            airspacePolyline.lowerAltitude + " " + Controller.unitToString(airspacePolyline.lowerAltitudeUnits) + "\n" +
+                                            airspacePolyline.type})
                                 }
-                                last = i
-                            } else if(airspacePolyline.path[last].distanceTo(airspacePolyline.path[i]) > 20000) {
-                                last = i
                             }
+
+                            next += labelPixelDist * occurrences
                         }
                     }
-
-                    model.clear();
-                    for(var k = 0; k < labelModel.length; k++) {
-                        model.append(labelModel[k]);
-                    }
                 }
 
-                Component.onCompleted: {
-                    updateLabelModel()
-                    root.addMapItemView(airspaceDescItemView)
+                for(var k = 0; k < labelModel.length; k++) {
+                    airspaceDescItemView.model.append(labelModel[k]);
                 }
+            }
 
-                Component.onDestruction: {
-                    root.removeMapItemView(airspaceDescItemView)
-                }
+            Component.onCompleted: updateLabelModel()
 
-                Connections {
-                    target: root
-                    function onZoomLevelChanged() {
-                        airspaceDescItemView.updateLabelModel()
-                    }
-                    function onUpdateAsLabels() {
-                        airspaceDescItemView.updateLabelModel()
-                    }
+            Connections {
+                target: root
+                function onUpdateAsLabels() {
+                    airspacePolyline.updateLabelModel()
                 }
             }
         }
@@ -293,11 +276,22 @@ Map {
 
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+
+        if(Math.abs(root.zoomLevel - root.oldZoomLevel) > 0.75) {
+            airspaceDescItemView.model.clear()
+            updateAsLabels()
+            oldZoomLevel = zoomLevel
+        }
     }
 
     onCenterChanged: {
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+
+        if(zoomLevel > 13) {
+            airspaceDescItemView.model.clear()
+            updateAsLabels()
+        }
     }
 
     Component.onCompleted: {
@@ -306,6 +300,8 @@ Map {
 
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+
+        oldZoomLevel = zoomLevel
     }
 
     LocationPermission {
@@ -347,7 +343,6 @@ Map {
 
         onClicked: {
             root.center = positionSource.position.coordinate
-            root.updateAsLabels()
         }
     }
 
