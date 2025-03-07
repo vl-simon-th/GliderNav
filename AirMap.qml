@@ -98,13 +98,53 @@ Map {
     plugin: osmMapPlugin
     copyrightsVisible: false
 
-    MapPolyline {
-        id: flightLogMapPolyline
+    MapItemView {
+        id: flightLogMapItemView
 
-        path: currentFlightLog ? currentFlightLog.path : []
+        model: currentFlightLog && currentFlightLog.path.length > 1 ? currentFlightLog.path : []
 
-        line.color: "green"
-        line.width: 4
+        add: Transition {}
+        remove: Transition {}
+
+        function numberToColor(value) {
+            value = Math.max(-5, Math.min(5, value)); // Ensure the value is within the range
+
+            let normalized = (value + 5) / 10.0; // Normalize the value to a range of 0 to 1
+            let r, g, b;
+
+            if (value < 0) {
+                // Red to Orange
+                r = 1.0;
+                g = normalized * 2;
+                b = 0.0;
+            } else {
+                // Orange to Green
+                r = 2 * (1 - normalized);
+                g = 1.0;
+                b = 0.0;
+            }
+
+            // Convert to 0-255 range
+            r = Math.round(r * 255);
+            g = Math.round(g * 255);
+            b = Math.round(b * 255);
+
+            return Qt.rgba(r / 255, g / 255, b / 255, 1.0);
+        }
+
+        delegate: MapPolyline {
+            id: flightLogMapPolyline
+
+            property geoCoordinate p1: modelData
+            property geoCoordinate p2: model.index !== currentFlightLog.path.length-1 ? currentFlightLog.path[model.index +1] : QtPositioning.coordinate()
+
+            path: p2.isValid ? [p1, p2] : []
+
+            line.color: flightLogMapItemView.numberToColor(p2.altitude-p1.altitude)
+            line.width: 4
+        }
+
+        Component.onCompleted: root.addMapItemView(flightLogMapItemView)
     }
 
     MapItemGroup {

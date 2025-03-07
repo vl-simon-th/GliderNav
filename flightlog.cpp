@@ -21,9 +21,11 @@ void FlightLog::setPath(const QList<QGeoCoordinate> &newPath)
 void FlightLog::addPoint(const QGeoCoordinate &point)
 {
     path.append(point);
+    timestamps.append(QDateTime::currentDateTime());
     writeToDir();
 
     emit pathChanged();
+    emit timestampsChanged();
 }
 
 QDateTime FlightLog::getStartTime() const
@@ -84,6 +86,13 @@ void FlightLog::writeToDir()
         pathArray.append(coordObj);
     }
     root["path"] = pathArray;
+
+    QJsonArray timestampsArray;
+    foreach (const QDateTime &time, timestamps) {
+        timestampsArray.append(time.toString(Qt::ISODate));
+    }
+
+    root["timestamps"] = timestampsArray;
 
     // Start time
     root["startTime"] = startTime.toString(Qt::ISODate);
@@ -162,6 +171,17 @@ FlightLog *FlightLog::readFromDir(const QDir &dir)
         flightLog->setPath(newPath);
     }
 
+    QJsonValue timestampsValue = root.value("timestamps");
+    if(timestampsValue.isArray()) {
+        QList<QDateTime> newTimestamps;
+        QJsonArray timestampsArray = timestampsValue.toArray();
+        foreach(const QJsonValue &timeValue, timestampsArray) {
+            if(!timeValue.isString()) continue;
+            newTimestamps.append(QDateTime::fromString(timeValue.toString(), Qt::ISODate));
+        }
+        flightLog->setTimestamps(newTimestamps);
+    }
+
     // Parse start time
     if (root.contains("startTime")) {
         QString startTimeString = root.value("startTime").toString();
@@ -175,4 +195,17 @@ FlightLog *FlightLog::readFromDir(const QDir &dir)
     }
 
     return flightLog;
+}
+
+QList<QDateTime> FlightLog::getTimestamps() const
+{
+    return timestamps;
+}
+
+void FlightLog::setTimestamps(const QList<QDateTime> &newTimestamps)
+{
+    if (timestamps == newTimestamps)
+        return;
+    timestamps = newTimestamps;
+    emit timestampsChanged();
 }

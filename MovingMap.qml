@@ -26,16 +26,14 @@ Item {
 
             coordinate: airMap.userPos.coordinate
 
-            sourceItem: Image {
-                x: width/-2
-                y: height/-2
-                id: userPositionImage
-                source: "icons/glider.svg"
+            sourceItem: Item {
+                Image {
+                    id: userPositionImage
 
-                transform: Rotation{
-                    origin.x: width/2
-                    origin.y: height/2
-                    angle: airMap.userPos.direction ? airMap.userPos.direction : 0
+                    anchors.centerIn: parent
+                    source: "icons/glider.svg"
+
+                    rotation: airMap.userPos.direction ? airMap.userPos.direction : 0
                 }
             }
 
@@ -45,8 +43,7 @@ Item {
         onPositionChanged: function(pos) {
             userPos = pos
             if(Controller.currentLog) {
-                Controller.currentLog.writeToDir()
-                Controller.currentLog.addPoint(pos)
+                Controller.currentLog.addPoint(pos.coordinate)
             }
         }
     }

@@ -41,6 +41,9 @@ public:
     Q_INVOKABLE void deleteDir();
     static FlightLog *readFromDir(const QDir &dir);
 
+    QList<QDateTime> getTimestamps() const;
+    void setTimestamps(const QList<QDateTime> &newTimestamps);
+
 signals:
 
     void pathChanged();
@@ -49,14 +52,19 @@ signals:
 
     void endTimeChanged();
 
+    void timestampsChanged();
+
 private:
     QList<QGeoCoordinate> path;
     Q_PROPERTY(QList<QGeoCoordinate> path READ getPath WRITE setPath NOTIFY pathChanged FINAL)
+
+    QList<QDateTime> timestamps;
 
     QDateTime startTime;
     QDateTime endTime;
     Q_PROPERTY(QDateTime startTime READ getStartTime WRITE setStartTime NOTIFY startTimeChanged FINAL)
     Q_PROPERTY(QDateTime endTime READ getEndTime WRITE setEndTime NOTIFY endTimeChanged FINAL)
+    Q_PROPERTY(QList<QDateTime> timestamps READ getTimestamps WRITE setTimestamps NOTIFY timestampsChanged FINAL)
 };
 
 #endif // FLIGHTLOG_H
