@@ -25,7 +25,6 @@ Map {
         name: "osm"
     }
 
-    //center: QtPositioning.coordinate(59.91, 10.75) // Oslo
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 14
     activeMapType: supportedMapTypes[AppSettings.mapTypeIndex]
@@ -106,6 +105,8 @@ Map {
         add: Transition {}
         remove: Transition {}
 
+        z: 6
+
         function numberToColor(value) {
             value = Math.max(-5, Math.min(5, value)); // Ensure the value is within the range
 
@@ -150,6 +151,8 @@ Map {
     MapItemGroup {
         id: taskMapItemGroup
 
+        z: 2
+
         MapPolyline {
             id: taskPath
 
@@ -178,6 +181,8 @@ Map {
     MapItemView {
         id: airportMapItemView
         model: Controller.airportFilterModel
+
+        z: 0
 
         delegate: MapQuickItem {
             id: airportMapQuickItem
@@ -232,6 +237,8 @@ Map {
 
         model: ListModel {}
 
+        z: 1
+
         delegate: MapQuickItem {
 
             coordinate: model.pos
@@ -263,6 +270,8 @@ Map {
         id: airspacesItemView
 
         model: Controller.airspaceFilterModel
+
+        z: 0
 
         delegate: MapPolyline {
             id: airspacePolyline
@@ -399,6 +408,8 @@ Map {
         onClicked: {
             root.center = positionSource.position.coordinate
         }
+
+        z: 10
     }
 
     function fitToTask() {

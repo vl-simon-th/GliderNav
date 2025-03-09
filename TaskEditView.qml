@@ -120,17 +120,36 @@ Page {
             Layout.fillWidth: true
             Layout.leftMargin: -parent.columnSpacing
 
-            height: count * 30
+            model: task.distancesToPoint.length
 
-            model: task.distancesToPoint
+            Layout.minimumHeight: currentItem ? task.distancesToPoint.length * currentItem.height : 0
 
             visible: task.taskType === 0
 
+            Rectangle {
+                anchors.fill: parent
+                color: "white"
+                z: -1
+
+                radius: 4
+            }
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 4
+                color: "white"
+                z: -1
+            }
+
             delegate: RowLayout {
                 spacing: 0
+                anchors.left: parent.left
+                anchors.right: parent.right
                 Text {
                     id: indexText
-                    text: model.index
+                    text: model.index + 1
                     font.pointSize: 11
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: Text.AlignHCenter
@@ -138,27 +157,28 @@ Page {
                     Layout.fillHeight: true
 
                     Layout.minimumWidth: height
-
-                    Rectangle {
-                        color: "white"
-                        anchors.fill: parent
-                        z:-1
-                    }
                 }
                 TextField {
                     id: distanceTextField
-                    text: modelData
+                    text: (task.distancesToPoint[model.index] / 1000.0)
 
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    onAccepted: task.distancesToPoint[model.index] = text
-
-                    Rectangle {
-                        color: "white"
-                        anchors.fill: parent
-                        z: -1
+                    onTextEdited: {
+                        if(!(text === "" || text.endsWith("."))) {
+                            task.distancesToPoint[model.index] = parseFloat(text) * 1000
+                        }
                     }
+
+                    onTextChanged: {
+                        if (text === "nan" || text === "inf") {
+                            text = "0"
+                        }
+                    }
+
+                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                    validator: RegularExpressionValidator {regularExpression: /(\d+(\.\d{1,3})?|\.\d{1,3})/}
                 }
             }
         }
@@ -180,13 +200,15 @@ Page {
             id: tapHandler
 
             onSingleTapped: {
-                task.addTurnPoint(airMap.toCoordinate(tapHandler.point.position), 1000)
+                task.addTurnPoint(airMap.toCoordinate(tapHandler.point.position), 10000)
             }
         }
 
         MapItemView {
             id: tpMarkerMapItemView
             model: task ? task.turnPoints : []
+
+            z: 1
 
             delegate: MapQuickItem {
                 id: tpMarkerMapQuickItem
@@ -213,7 +235,7 @@ Page {
         }
 
         onAirportClicked: (coordinate) => {
-                              task.addTurnPoint(coordinate, 1000)
+                              task.addTurnPoint(coordinate, 10000)
                           }
 
         onAirportDoubleClicked: (coordinate) => {

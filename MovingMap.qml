@@ -26,6 +26,8 @@ Item {
 
             coordinate: airMap.userPos.coordinate
 
+            z: 5
+
             sourceItem: Item {
                 Image {
                     id: userPositionImage
@@ -64,6 +66,8 @@ Item {
         anchors.right: parent.right
         anchors.margins: 8
 
+        z: 10
+
         MessageDialog {
             id: taskResetDialog
             text: qsTr("Do you really want to stop the flight log?")
@@ -88,6 +92,8 @@ Item {
         text: qsTr("Start Log")
 
         visible: !airMap.currentFlightLog
+
+        z: 10
 
         display: AbstractButton.IconOnly
         icon.source: "icons/play.svg"
