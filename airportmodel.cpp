@@ -159,3 +159,12 @@ void AirportModel::addAvailableStyle(int style)
     std::sort(availableStyles.begin(), availableStyles.end());
     emit availableStylesChanged();
 }
+
+Airport *AirportModel::findAirport(const QGeoCoordinate &coord)
+{
+    foreach (Airport *airport, airports) {
+        if(airport->getPosition() == coord) {
+            return airport;
+        }
+    }
+}

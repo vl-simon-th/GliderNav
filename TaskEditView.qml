@@ -226,7 +226,7 @@ Page {
                         color: "pink"
                     }
 
-                    onClicked: task.addTurnPoint(tpMarkerMapQuickItem.coordinate, 1000)
+                    onClicked: task.addTurnPoint(tpMarkerMapQuickItem.coordinate, 10000)
                     onDoubleClicked: task.removeTurnPoint(tpMarkerMapQuickItem.coordinate)
                 }
             }

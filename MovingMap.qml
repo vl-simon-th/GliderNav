@@ -48,6 +48,16 @@ Item {
                 Controller.currentLog.addPoint(pos.coordinate)
             }
         }
+
+        onAirportClicked: (pos) => {airportMenu.airport = Controller.airportModel.findAirport(pos)}
+    }
+
+    AirportMenu {
+        id: airportMenu
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     Button {

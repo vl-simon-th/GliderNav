@@ -97,8 +97,10 @@ void AirspaceModel::importAirspacesFromFile(const QString &filePath)
 
     while(!in.atEnd()) {
         QString line = in.readLine();
-        if(!line.startsWith("*")) {
-            currentAS += line + '\n';
+        if(!(line == "")) {
+            if(!line.startsWith("*")) {
+                currentAS += line + '\n';
+            }
         } else if (currentAS != "") {
             airspaces.append(createAirspaceFromLine(currentAS));
             currentAS = "";

@@ -9,6 +9,7 @@
 
 #include <QDir>
 #include <QString>
+#include <QGeoCoordinate>
 
 class AirportModel : public QAbstractListModel
 {
@@ -33,6 +34,8 @@ public:
     QList<int> getAvailableStyles() const;
     void setAvailableStyles(const QList<int> &newAvailableStyles);
     Q_INVOKABLE void addAvailableStyle(int style);
+
+    Q_INVOKABLE Airport *findAirport(const QGeoCoordinate &coord);
 
 signals:
     void airportsChanged();

@@ -24,6 +24,8 @@ Map {
         id: osmMapPlugin
         name: "osm"
     }
+    plugin: osmMapPlugin
+    copyrightsVisible: false
 
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 14
@@ -94,13 +96,10 @@ Map {
         }
     }
 
-    plugin: osmMapPlugin
-    copyrightsVisible: false
-
     MapItemView {
         id: flightLogMapItemView
 
-        model: currentFlightLog && currentFlightLog.path.length > 1 ? currentFlightLog.path : []
+        model: currentFlightLog && currentFlightLog.path.length > 1 ? currentFlightLog.path.length : []
 
         add: Transition {}
         remove: Transition {}
@@ -136,12 +135,12 @@ Map {
         delegate: MapPolyline {
             id: flightLogMapPolyline
 
-            property geoCoordinate p1: modelData
+            property geoCoordinate p1: currentFlightLog.path[model.index]
             property geoCoordinate p2: model.index !== currentFlightLog.path.length-1 ? currentFlightLog.path[model.index +1] : QtPositioning.coordinate()
 
             path: p2.isValid ? [p1, p2] : []
 
-            line.color: flightLogMapItemView.numberToColor(p2.altitude-p1.altitude)
+            line.color: flightLogMapItemView.numberToColor((p2.altitude-p1.altitude)*5/p1.distanceTo(p2))
             line.width: 4
         }
 
@@ -190,43 +189,49 @@ Map {
 
             autoFadeIn: false
 
-            sourceItem: AbstractButton {
-                x: height / -2
-                y: height / -2
-                height: root.zoomLevel > 7 ? 40 : 30
-                width: height
-                Rectangle {
-                    anchors.centerIn: parent
-                    height: parent.height / 2
+            sourceItem: Item {
+                Text {
+                    id: airportNameText
+                    text: model.name
+                    font.bold: true
+                    font.pointSize: 10
+                    verticalAlignment: Text.AlignVCenter
+                    y: -30
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    visible: root.zoomLevel > 10.35
+                }
+                AbstractButton {
+                    height: root.zoomLevel > 7 ? 40 : 30
                     width: height
-                    color: "transparent"
-                    border.color: "black"
-                    border.width: root.zoomLevel > 7 ? 4 : 2
-
-                    radius: height/2
-                }
-
-                Rectangle {
                     anchors.centerIn: parent
-                    height: parent.height
-                    width: parent.width / 4.5
-                    color: "transparent"
-                    border.color: "black"
-                    border.width: root.zoomLevel > 7 ? 3 : 1.5
-                }
+                    Rectangle {
+                        anchors.centerIn: parent
+                        height: parent.height / 2
+                        width: height
+                        color: "transparent"
+                        border.color: "black"
+                        border.width: root.zoomLevel > 7 ? 4 : 2
 
-                transform: Rotation {
-                    origin.x: width/2
-                    origin.y: height/2
-                    angle: model.rwdir
-                }
+                        radius: height/2
+                    }
+                    Rectangle {
+                        anchors.centerIn: parent
+                        height: parent.height
+                        width: parent.width / 4.5
+                        color: "transparent"
+                        border.color: "black"
+                        border.width: root.zoomLevel > 7 ? 3 : 1.5
+                    }
 
-                onClicked: {
-                    airportClicked(airportMapQuickItem.coordinate)
-                }
+                    rotation: model.rwdir
 
-                onDoubleClicked: {
-                    airportDoubleClicked(airportMapQuickItem.coordinate)
+                    onClicked: {
+                        airportClicked(airportMapQuickItem.coordinate)
+                    }
+
+                    onDoubleClicked: {
+                        airportDoubleClicked(airportMapQuickItem.coordinate)
+                    }
                 }
             }
         }
@@ -245,15 +250,15 @@ Map {
 
             sourceItem: Text {
                 x: -width/2
-                y: 0
+                y: model.angle > 90 && model.angle < 270 ? -height : 0
                 text: model.text
                 font.pointSize: 10
                 horizontalAlignment: Text.AlignHCenter
                 color: "blue"
                 transform: Rotation {
                     origin.x: width/2
-                    origin.y: 0
-                    angle: model.angle
+                    origin.y: model.angle > 90 && model.angle < 270 ? height : 0
+                    angle: model.angle > 90 && model.angle < 270 ? model.angle - 180 : model.angle
                 }
 
                 Rectangle {
@@ -318,10 +323,22 @@ Map {
                                     if(pos.isValid) {
                                         var azimuth = airspacePolyline.path[i].azimuthTo(airspacePolyline.path[i+1]);
 
-                                        labelModel.push({"pos": pos, "angle": azimuth + 90,
-                                                "text": airspacePolyline.upperAltitude + " " + Controller.unitToString(airspacePolyline.upperAltitudeUnits) + "\n" +
-                                                airspacePolyline.lowerAltitude + " " + Controller.unitToString(airspacePolyline.lowerAltitudeUnits) + "\n" +
-                                                airspacePolyline.type})
+                                        var text = airspacePolyline.type + "\n"
+
+                                        var upperUnit = Controller.unitToString(airspacePolyline.upperAltitudeUnits)
+                                        var lowerUnit = Controller.unitToString(airspacePolyline.lowerAltitudeUnits)
+
+                                        if(upperUnit === "FL") text += "FL " + airspacePolyline.upperAltitude + "\n"
+                                        else if(upperUnit === "MSL") text += airspacePolyline.upperAltitude + " MSL\n"
+                                        else if(upperUnit === "GND" && airspacePolyline.upperAltitude !== 0) text += airspacePolyline.upperAltitude + " GND\n"
+                                        else text += "GND\n"
+
+                                        if(lowerUnit === "FL") text += "FL " + airspacePolyline.lowerAltitude + ""
+                                        else if(lowerUnit === "MSL") text += airspacePolyline.lowerAltitude + " MSL"
+                                        else if(lowerUnit === "GND" && airspacePolyline.lowerAltitude !== 0) text += airspacePolyline.lowerAltitude + " GND"
+                                        else text += "GND"
+
+                                        labelModel.push({"pos": pos, "angle": azimuth+90, "text": text})
                                     }
                                 }
                             }

@@ -125,8 +125,8 @@ QString Airspace::unitToString(AltitudeUnit unit)
 double Airspace::parseAltitude(const QString &altitudeString, AltitudeUnit &unit) const {
     if (altitudeString.endsWith("GND")) {
         unit = AltitudeUnit::GND;
-        if(altitudeString.length() > 3) {
-            return altitudeString.first(altitudeString.length() - 3).toDouble(); // Remove "GND"
+        if(!altitudeString.startsWith("GND")) {
+            return altitudeString.first(altitudeString.length() - 6).toDouble(); // Remove "GND"
         }
         return 0.0;
     } else if (altitudeString.endsWith("ft MSL")) {
@@ -134,7 +134,7 @@ double Airspace::parseAltitude(const QString &altitudeString, AltitudeUnit &unit
         return altitudeString.first(altitudeString.length() - 6).toDouble(); // Remove "ft MSL"
     } else if (altitudeString.startsWith("FL")) {
         unit = AltitudeUnit::FL;
-        return altitudeString.sliced(3).toDouble(); // Remove "FL"
+        return altitudeString.sliced(2).toDouble(); // Remove "FL"
     } else {
         unit = AltitudeUnit::UNKNOWN;
         return 0.0;
