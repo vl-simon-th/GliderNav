@@ -47,9 +47,9 @@ Item {
             id: goalPolyline
 
             line.color: "purple"
-            line.width: 4
+            line.width: 3
 
-            path: [airMap.userPos.coordinate, airMap.goal]
+            path: airMap.goal.isValid ? [airMap.userPos.coordinate, airMap.goal] : []
             Component.onCompleted: airMap.addMapItem(goalPolyline)
 
             z: 5
@@ -65,9 +65,9 @@ Item {
         onAirportClicked: (pos) => {airportMenu.airport = Controller.airportModel.findAirport(pos)}
 
         onAirportDoubleClicked: (pos) => {
-                                    airportMenu.airport = airportMenu.defaultAirport
-                                    if(goal === pos) {
+                                    if(goal.altitude === pos.altitude && goal.longitude === pos.longitude) {
                                         goal = QtPositioning.coordinate()
+                                        airportMenu.airport = airportMenu.defaultAirport
                                     } else {
                                         goal = pos
                                     }
