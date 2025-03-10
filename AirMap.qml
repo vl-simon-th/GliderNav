@@ -1,10 +1,10 @@
 import QtQuick
+import QtCore
 import QtLocation
 import QtPositioning
 
 import QtQuick.Controls
 import QtQuick.Dialogs
-import QtCore
 
 import GliderNav
 
@@ -29,7 +29,6 @@ Map {
 
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 14
-    activeMapType: supportedMapTypes[AppSettings.mapTypeIndex]
     property geoCoordinate startCentroid
 
     PinchHandler {
@@ -76,6 +75,7 @@ Map {
                 root.updateAsLabels()
             }
         }
+        grabPermissions: PointerHandler.CanTakeOverFromAnything
     }
     Shortcut {
         enabled: root.zoomLevel < root.maximumZoomLevel

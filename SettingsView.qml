@@ -148,6 +148,7 @@ Flickable {
             }
         }
 
+        /*
         RowLayout {
             Layout.fillWidth: true
 
@@ -163,15 +164,13 @@ Flickable {
             SpinBox {
                 id: mapTypeSpinBox
                 from: 0
-                to: 6
+                to: 5
                 value: AppSettings.mapTypeIndex
 
                 onValueChanged: AppSettings.mapTypeIndex = value
                 Layout.fillHeight: true
                 Layout.fillWidth: true
             }
-        }
-
-
+        }*/
     }
 }
