@@ -8,6 +8,8 @@ ApplicationWindow {
     visible: true
     title: qsTr("Glider Nav")
 
+    //flags: Qt.FramelessWindowHint
+
     SwipeView {
         id: swipeView
         width: parent.width

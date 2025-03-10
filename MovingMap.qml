@@ -20,6 +20,7 @@ Item {
         currentFlightLog: Controller.currentLog
 
         property Position userPos : Position{}
+        property geoCoordinate goal: QtPositioning.coordinate()
 
         MapQuickItem {
             id: userPositionMapQuickItem
@@ -42,6 +43,18 @@ Item {
             Component.onCompleted: airMap.addMapItem(userPositionMapQuickItem)
         }
 
+        MapPolyline {
+            id: goalPolyline
+
+            line.color: "purple"
+            line.width: 4
+
+            path: [airMap.userPos.coordinate, airMap.goal]
+            Component.onCompleted: airMap.addMapItem(goalPolyline)
+
+            z: 5
+        }
+
         onPositionChanged: function(pos) {
             userPos = pos
             if(Controller.currentLog) {
@@ -50,6 +63,8 @@ Item {
         }
 
         onAirportClicked: (pos) => {airportMenu.airport = Controller.airportModel.findAirport(pos)}
+
+        onAirportDoubleClicked: (pos) => {goal = pos}
     }
 
     AirportMenu {
@@ -117,6 +132,29 @@ Item {
         onClicked: {
             Controller.currentLog = flightLogFactory.createObject()
             Controller.logList.addLog(Controller.currentLog)
+        }
+    }
+
+    Label {
+        id: heightLabel
+        text: airMap.userPos.altitudeValid ? Math.round(airMap.userPos.coordinate.altitude) + " m" : "--- m"
+
+        height: startLogButton.height
+        width: Math.max(startLogButton.width, contentWidth + 10)
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: 4
+
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+
+
+        background: Rectangle {
+            radius: 4
+            border.color: "grey"
+            border.width: 2
+            color: "white"
         }
     }
 

@@ -15,7 +15,7 @@
     <string>GliderNav</string>
 
     <key>CFBundleIdentifier</key>
-    <string>com.visionaryworksstudio.glidernav</string>
+    <string>com.visionlines.glidernav</string>
 
     <key>CFBundleExecutable</key>
     <string>GliderNav</string>
@@ -51,6 +51,9 @@
     <string>Showing location information in the vicinity of the user</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Showing location information in the vicinity of the user</string>
+
+    <key>UIUserInterfaceStyle</key>
+    <string>Light</string>
 
 </dict>
 </plist>
