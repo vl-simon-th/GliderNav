@@ -19,7 +19,7 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         rows: 2
-        columns: 4
+        columns: 5
         rowSpacing: 0
         columnSpacing: 6
 
@@ -47,10 +47,30 @@ Page {
         }
 
         Text {
-            id: aatText
+            id: lengthText
 
             Layout.row: 0
             Layout.column: 1
+
+            Layout.fillHeight: true
+
+            text: "- " + Math.floor(task.length/1000) + "km"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.leftMargin: -topLayout.columnSpacing
+                color: "white"
+                z: -1
+            }
+        }
+
+        Text {
+            id: aatText
+
+            Layout.row: 0
+            Layout.column: 2
             Layout.fillHeight: true
 
             text: qsTr("AAT")
@@ -69,7 +89,7 @@ Page {
             id: taskTypeSwitch
 
             Layout.row: 0
-            Layout.column: 2
+            Layout.column: 3
             Layout.fillHeight: true
 
             onCheckedChanged: {
@@ -94,7 +114,7 @@ Page {
             id: rtText
 
             Layout.row: 0
-            Layout.column: 3
+            Layout.column: 4
             Layout.fillHeight: true
 
             text: qsTr("RT")
@@ -114,7 +134,7 @@ Page {
             interactive: false
 
             Layout.row: 1
-            Layout.column: 1
+            Layout.column: 2
             Layout.columnSpan: 3
 
             Layout.fillWidth: true

@@ -3,6 +3,7 @@
 Task::Task(QObject *parent)
     : QObject{parent}
 {
+    connect(this, &Task::turnPointsChanged, this, &Task::calcLength);
 }
 
 QList<QGeoCoordinate> Task::getTurnPoints() const
@@ -205,6 +206,28 @@ Task *Task::readFromDir(const QDir &dir)
     }
 
     return task;
+}
+
+double Task::getLength() const
+{
+    return length;
+}
+
+void Task::setLength(double newLength)
+{
+    if (qFuzzyCompare(length, newLength))
+        return;
+    length = newLength;
+    emit lengthChanged();
+}
+
+void Task::calcLength()
+{
+    length = 0;
+    for(int i = 0; i < turnPoints.length()-1; i++) {
+        length += turnPoints[i].distanceTo(turnPoints[i+1]);
+    }
+    emit lengthChanged();
 }
 
 QString Task::getName() const

@@ -1,4 +1,4 @@
-#ifndef TASK_H
+ #ifndef TASK_H
 #define TASK_H
 
 #include <QObject>
@@ -52,6 +52,9 @@ public:
     Q_INVOKABLE void deleteDir();
     static Task *readFromDir(const QDir &dir);
 
+    double getLength() const;
+    void setLength(double newLength);
+
 signals:
 
     void turnPointsChanged();
@@ -60,6 +63,11 @@ signals:
     void nameChanged();
 
     void taskTypeChanged();
+
+    void lengthChanged();
+
+public slots:
+    void calcLength();
 
 private:
     QString name;
@@ -71,8 +79,11 @@ private:
     Q_PROPERTY(QList<QGeoCoordinate> turnPoints READ getTurnPoints WRITE setTurnPoints NOTIFY turnPointsChanged FINAL)
     Q_PROPERTY(QList<double> distancesToPoint READ getDistancesToPoint WRITE setDistancesToPoint NOTIFY distancesToPointChanged FINAL)
 
+    double length = 0;
+
     TaskType taskType;
     Q_PROPERTY(TaskType taskType READ getTaskType WRITE setTaskType NOTIFY taskTypeChanged FINAL)
+    Q_PROPERTY(double length READ getLength WRITE setLength NOTIFY lengthChanged FINAL)
 };
 
 #endif // TASK_H
