@@ -64,7 +64,14 @@ Item {
 
         onAirportClicked: (pos) => {airportMenu.airport = Controller.airportModel.findAirport(pos)}
 
-        onAirportDoubleClicked: (pos) => {goal = pos}
+        onAirportDoubleClicked: (pos) => {
+                                    airportMenu.airport = airportMenu.defaultAirport
+                                    if(goal === pos) {
+                                        goal = QtPositioning.coordinate()
+                                    } else {
+                                        goal = pos
+                                    }
+                                }
     }
 
     AirportMenu {

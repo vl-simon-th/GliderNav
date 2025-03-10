@@ -7,6 +7,7 @@ import GliderNav
 Item {
     id: root
     property Airport airport : defaultAirport
+    property alias defaultAirport : defaultAirport
 
     Airport {
         id: defaultAirport
