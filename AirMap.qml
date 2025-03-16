@@ -96,55 +96,55 @@ Map {
         }
     }
 
-    MapItemView {
-        id: flightLogMapItemView
+    property list<MapPolyline> logPolylines : []
 
-        model: currentFlightLog && currentFlightLog.path.length > 1 ? currentFlightLog.path.length : []
+    function resetLogPolylines() {
+        for(var i = 0; i < logPolylines.length; i++) {
+            root.removeMapItem(logPolylines[i])
+        }
+        logPolylines = []
+    }
 
-        add: Transition {}
-        remove: Transition {}
+    Component {
+        id: logPolylineAddFactory
+        MapPolyline {
+            id: logPolyline
+            required property int pathIndex
+            line.width: 3
 
-        z: 6
-
-        function numberToColor(value) {
-            value = Math.max(-5, Math.min(5, value)); // Ensure the value is within the range
-
-            let normalized = (value + 5) / 10.0; // Normalize the value to a range of 0 to 1
-            let r, g, b;
-
-            if (value < 0) {
-                // Red to Orange
-                r = 1.0;
-                g = normalized * 2;
-                b = 0.0;
-            } else {
-                // Orange to Green
-                r = 2 * (1 - normalized);
-                g = 1.0;
-                b = 0.0;
+            Component.onCompleted: {
+                logPolyline.path = [currentFlightLog.path[logPolyline.pathIndex], currentFlightLog.path[logPolyline.pathIndex+1]]
+                logPolyline.line.color = currentFlightLog.colors[logPolyline.pathIndex]
             }
-
-            // Convert to 0-255 range
-            r = Math.round(r * 255);
-            g = Math.round(g * 255);
-            b = Math.round(b * 255);
-
-            return Qt.rgba(r / 255, g / 255, b / 255, 1.0);
         }
+    }
+    function addLatestLogLine() {
+        var logPolyline = logPolylineAddFactory.createObject(root, {pathIndex: currentFlightLog.path.length-2})
+        logPolylines.push(logPolyline)
+        root.addMapItem(logPolyline)
+    }
 
-        delegate: MapPolyline {
-            id: flightLogMapPolyline
-
-            property geoCoordinate p1: currentFlightLog.path[model.index]
-            property geoCoordinate p2: model.index !== currentFlightLog.path.length-1 ? currentFlightLog.path[model.index +1] : QtPositioning.coordinate()
-
-            path: p2.isValid ? [p1, p2] : []
-
-            line.color: flightLogMapItemView.numberToColor((p2.altitude-p1.altitude)*5/p1.distanceTo(p2))
-            line.width: 4
+    function loadAllLogPoints() {
+        for(var i = 0; i < currentFlightLog.path.length-2; i++) {
+            var logPolyline = logPolylineAddFactory.createObject(root, {pathIndex: i})
+            logPolylines.push(logPolyline)
+            root.addMapItem(logPolyline)
         }
+    }
 
-        Component.onCompleted: root.addMapItemView(flightLogMapItemView)
+    Connections {
+        target: currentFlightLog
+        function onPathChanged() {
+            if(currentFlightLog.path.length > 1) {
+                addLatestLogLine()
+            }
+        }
+    }
+    onCurrentFlightLogChanged: {
+        resetLogPolylines()
+        if(currentFlightLog) {
+            loadAllLogPoints()
+        }
     }
 
     MapItemGroup {
@@ -251,21 +251,19 @@ Map {
             sourceItem: Text {
                 x: -width/2
                 y: model.angle > 90 && model.angle < 270 ? -height : 0
+
                 text: model.text
-                font.pointSize: 10
+                styleColor: "white"
+                style: Text.Outline
+                font.pixelSize: 16
+
                 horizontalAlignment: Text.AlignHCenter
                 color: "blue"
+
                 transform: Rotation {
                     origin.x: width/2
                     origin.y: model.angle > 90 && model.angle < 270 ? height : 0
                     angle: model.angle > 90 && model.angle < 270 ? model.angle - 180 : model.angle
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    z: -3
-                    color: "orange"
-                    opacity: 0.7
                 }
             }
         }
@@ -319,7 +317,7 @@ Map {
                                 for(var j = 1; j < occurrences+1; j++) {
                                     var p = Qt.point(p1.x + dx*j/(occurrences+1), p1.y + dy*j/(occurrences+1))
 
-                                    var pos = root.toCoordinate(p, false);
+                                    var pos = root.toCoordinate(p, true);
                                     if(pos.isValid) {
                                         var azimuth = airspacePolyline.path[i].azimuthTo(airspacePolyline.path[i+1]);
 

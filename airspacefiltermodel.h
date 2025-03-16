@@ -30,7 +30,7 @@ protected:
     bool filterAcceptsRow(int row, const QModelIndex &parent) const override;
 
 private:
-    QSet<QString> validTypes = {"C", "D", "E", "CTR"};
+    QSet<QString> validTypes = {"C", "D", "CTR", "R", "RMZ", "TMZ"};
     QGeoShape viewArea;
     QGeoRectangle viewAreaBoundingRect;
     double zoomLevel;

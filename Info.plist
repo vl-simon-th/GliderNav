@@ -15,7 +15,7 @@
     <string>GliderNav</string>
 
     <key>CFBundleIdentifier</key>
-    <string>com.visionlines.glidernav</string>
+    <string>com.vision-lines.glidernav</string>
 
     <key>CFBundleExecutable</key>
     <string>GliderNav</string>

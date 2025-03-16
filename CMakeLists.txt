@@ -17,11 +17,12 @@ qt_add_executable(GliderNav
 # explicit, fixed bundle identifier manually though.
 set_target_properties(GliderNav PROPERTIES
     MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_GUI_IDENTIFIER com.visionlines.glidernav
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.vision-lines.glidernav
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/GliderNav.entitlements"
+    XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME AppIcon
 
     WIN32_EXECUTABLE TRUE
 )
@@ -99,6 +100,14 @@ qt_add_qml_module(GliderNav
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
+
+if(IOS)
+    set(asset_catalog_path "ios/Assets.xcassets")
+    target_sources(GliderNav PRIVATE "${asset_catalog_path}")
+    set_source_files_properties(${asset_catalog_path} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set_target_properties(GliderNav
+        PROPERTIES XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME AppIcon)
+endif()
 
 #include(GNUInstallDirs)
 install(TARGETS GliderNav

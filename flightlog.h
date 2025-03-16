@@ -18,12 +18,16 @@
 #include <QFile>
 #include <QTextStream>
 
+#include <QColor>
+
 class FlightLog : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
 public:
     explicit FlightLog(QObject *parent = nullptr);
+
+    static QColor numberToColor(double value);
 
     QList<QGeoCoordinate> getPath() const;
     void setPath(const QList<QGeoCoordinate> &newPath);
@@ -44,6 +48,9 @@ public:
     QList<QDateTime> getTimestamps() const;
     void setTimestamps(const QList<QDateTime> &newTimestamps);
 
+    QList<QColor> getColors() const;
+    void setColors(const QList<QColor> &newColors);
+
 signals:
 
     void pathChanged();
@@ -54,17 +61,22 @@ signals:
 
     void timestampsChanged();
 
+    void colorsChanged();
+
 private:
     QList<QGeoCoordinate> path;
     Q_PROPERTY(QList<QGeoCoordinate> path READ getPath WRITE setPath NOTIFY pathChanged FINAL)
 
     QList<QDateTime> timestamps;
+    Q_PROPERTY(QList<QDateTime> timestamps READ getTimestamps WRITE setTimestamps NOTIFY timestampsChanged FINAL)
+
+    QList<QColor> colors;
+    Q_PROPERTY(QList<QColor> colors READ getColors WRITE setColors NOTIFY colorsChanged FINAL)
 
     QDateTime startTime;
     QDateTime endTime;
     Q_PROPERTY(QDateTime startTime READ getStartTime WRITE setStartTime NOTIFY startTimeChanged FINAL)
     Q_PROPERTY(QDateTime endTime READ getEndTime WRITE setEndTime NOTIFY endTimeChanged FINAL)
-    Q_PROPERTY(QList<QDateTime> timestamps READ getTimestamps WRITE setTimestamps NOTIFY timestampsChanged FINAL)
 };
 
 #endif // FLIGHTLOG_H

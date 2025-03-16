@@ -5,6 +5,38 @@ FlightLog::FlightLog(QObject *parent)
 {
 }
 
+QColor FlightLog::numberToColor(double value) {
+    // Ensure the value is within the range -5 to 5
+    if (value < -5.0) value = -5.0;
+    if (value > 5.0) value = 5.0;
+
+    // Handle the special case for value 0
+    if (value == 0.0) {
+        return QColor(255, 255, 0); // Yellow color
+    }
+
+    // Scale the value to a range of 0 to 1
+    double scaledValue;
+    if (value < 0.0) {
+        scaledValue = (value + 5.0) / 5.0; // Range from -5 to 0
+    } else {
+        scaledValue = value / 5.0; // Range from 0 to 5
+    }
+
+    // Calculate the red and green components
+    int red, green;
+    if (value < 0.0) {
+        red = 255;
+        green = scaledValue * 255; // Transition from red to yellow
+    } else {
+        red = (1.0 - scaledValue) * 255; // Transition from yellow to green
+        green = 255; // Green component stays at maximum
+    }
+
+    // Return the QColor
+    return QColor(red, green, 0);
+}
+
 QList<QGeoCoordinate> FlightLog::getPath() const
 {
     return path;
@@ -20,10 +52,18 @@ void FlightLog::setPath(const QList<QGeoCoordinate> &newPath)
 
 void FlightLog::addPoint(const QGeoCoordinate &point)
 {
+    QDateTime currentTime = QDateTime::currentDateTime();
+    if(path.length() > 0) {
+        colors.append(numberToColor(
+            (point.altitude()-path.last().altitude())/
+            timestamps.last().secsTo(currentTime)));
+    }
+
     path.append(point);
-    timestamps.append(QDateTime::currentDateTime());
+    timestamps.append(currentTime);
     writeToDir();
 
+    emit colorsChanged();
     emit pathChanged();
     emit timestampsChanged();
 }
@@ -157,8 +197,8 @@ FlightLog *FlightLog::readFromDir(const QDir &dir)
 
     // Parse path
     QJsonValue pathValue = root.value("path");
+    QList<QGeoCoordinate> newPath;
     if (pathValue.isArray()) {
-        QList<QGeoCoordinate> newPath;
         QJsonArray pathArray = pathValue.toArray();
         foreach (const QJsonValue &coordValue, pathArray) {
             if (!coordValue.isObject()) continue;
@@ -168,19 +208,40 @@ FlightLog *FlightLog::readFromDir(const QDir &dir)
             double alt = coordObj.value("altitude").toDouble();
             newPath.append(QGeoCoordinate(lat, lon, alt));
         }
-        flightLog->setPath(newPath);
     }
 
     QJsonValue timestampsValue = root.value("timestamps");
+    QList<QDateTime> newTimestamps;
     if(timestampsValue.isArray()) {
-        QList<QDateTime> newTimestamps;
         QJsonArray timestampsArray = timestampsValue.toArray();
         foreach(const QJsonValue &timeValue, timestampsArray) {
             if(!timeValue.isString()) continue;
             newTimestamps.append(QDateTime::fromString(timeValue.toString(), Qt::ISODate));
         }
-        flightLog->setTimestamps(newTimestamps);
     }
+
+
+    //usually this should not be needed as the length is the same
+    while(newPath.length() > newTimestamps.length()) {
+        newTimestamps.append(QDateTime(newTimestamps.last()).addSecs(3));
+    }
+    if(newTimestamps.length() > newPath.length()) {
+        newTimestamps = newTimestamps.first(newPath.length());
+    }
+
+    //setting after checks
+    flightLog->setPath(newPath);
+    flightLog->setTimestamps(newTimestamps);
+
+
+    QList<QColor> newColors;
+    for(int i = 0; i < newPath.length()-1; i++) {
+        newColors.append(numberToColor(
+            newPath[i+1].altitude()-newPath[i].altitude()/
+            newTimestamps[i].secsTo(newTimestamps[i+1])
+            ));
+    }
+    flightLog->setColors(newColors);
 
     // Parse start time
     if (root.contains("startTime")) {
@@ -208,4 +269,17 @@ void FlightLog::setTimestamps(const QList<QDateTime> &newTimestamps)
         return;
     timestamps = newTimestamps;
     emit timestampsChanged();
+}
+
+QList<QColor> FlightLog::getColors() const
+{
+    return colors;
+}
+
+void FlightLog::setColors(const QList<QColor> &newColors)
+{
+    if (colors == newColors)
+        return;
+    colors = newColors;
+    emit colorsChanged();
 }

@@ -115,13 +115,17 @@ Item {
         }
 
         onVisibleChanged: {
-            var shape = QtPositioning.polygon(currentFlightLog.path)
-            visibleRegion = shape.boundingGeoRectangle()
+            if(currentFlightLog) {
+                var shape = QtPositioning.polygon(currentFlightLog.path)
+                visibleRegion = shape.boundingGeoRectangle()
+            }
         }
 
         onCurrentFlightLogChanged: {
-            var shape = QtPositioning.polygon(currentFlightLog.path)
-            visibleRegion = shape.boundingGeoRectangle()
+            if(currentFlightLog) {
+                var shape = QtPositioning.polygon(currentFlightLog.path)
+                visibleRegion = shape.boundingGeoRectangle()
+            }
         }
     }
 }
