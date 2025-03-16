@@ -23,8 +23,14 @@ Map {
     Plugin {
         id: osmMapPlugin
         name: "osm"
+        PluginParameter { name: "osm.useragent"; value: "GliderNav" }
+        PluginParameter { name: "osm.mapping.custom.host"; value: AppSettings.mapSource }
+        PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
+        PluginParameter { name: "osm.mapping.cache.disk.size"; value: 0 }
     }
     plugin: osmMapPlugin
+    activeMapType: supportedMapTypes[supportedMapTypes.length - 1]
+
     copyrightsVisible: false
 
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
@@ -396,10 +402,11 @@ Map {
     }
 
     signal positionChanged(var pos)
+    property bool posSourceActive : false
     PositionSource {
         id: positionSource
         updateInterval: 3000
-        active: permission.status === Qt.Granted
+        active: root.posSourceActive && permission.status === Qt.Granted
 
         onPositionChanged: {
             root.positionChanged(positionSource.position)

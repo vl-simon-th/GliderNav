@@ -16,6 +16,8 @@ Item {
 
         anchors.fill: parent
 
+        posSourceActive: true
+
         currentTask: Controller.currentTask
         currentFlightLog: Controller.currentLog
 

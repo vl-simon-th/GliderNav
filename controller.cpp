@@ -151,6 +151,12 @@ QString Controller::unitToString(AltitudeUnit unit)
     return Airspace::unitToString(unit);
 }
 
+void Controller::restart()
+{
+    qApp->quit();
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+}
+
 //PUBLIC SLOTS
 
 void Controller::aptFileDownloaded(QNetworkReply *reply)

@@ -84,6 +84,7 @@ qt_add_qml_module(GliderNav
     SOURCES controller.h controller.cpp
     SOURCES flightlog.h flightlog.cpp
     SOURCES flightloglist.h flightloglist.cpp
+    SOURCES flightlogmodel.h flightlogmodel.cpp
     SOURCES airport.h airport.cpp
     SOURCES airspace.h airspace.cpp
     SOURCES airportmodel.h airportmodel.cpp
@@ -97,6 +98,7 @@ qt_add_qml_module(GliderNav
     QML_FILES AppSettings.qml
     QML_FILES
     QML_FILES AirportMenu.qml
+    QML_FILES MapSourceModel.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

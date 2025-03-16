@@ -215,6 +215,7 @@ Page {
 
         anchors.fill: parent
         currentTask: task
+        posSourceActive: root.visible
 
         TapHandler {
             id: tapHandler

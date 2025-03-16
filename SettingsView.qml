@@ -12,9 +12,14 @@ Flickable {
 
     flickableDirection: Flickable.VerticalFlick
 
+    contentWidth: width
+    contentHeight: mainLayout.height + 20
+
     ColumnLayout {
         id: mainLayout
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.left: parent.left
         anchors.margins: 6
 
         Button {
@@ -40,7 +45,10 @@ Flickable {
 
             clip: true
 
-            interactive: true
+            interactive: false
+
+            property int delHeight : 40
+            implicitHeight: count * delHeight
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -48,7 +56,10 @@ Flickable {
             model: Controller.airspaceModel.availableTypes
 
             delegate: SwitchDelegate {
+                id: asDelegate
                 text: modelData
+
+                height: validAsTypesListView.delHeight
 
                 anchors.left: parent ? parent.left : undefined
                 anchors.right: parent ? parent.right : undefined
@@ -76,7 +87,10 @@ Flickable {
 
             clip: true
 
-            interactive: true
+            interactive: false
+
+            property int delHeight : 40
+            implicitHeight: count * delHeight
 
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -84,7 +98,10 @@ Flickable {
             model: Controller.airportModel.availableStyles
 
             delegate: SwitchDelegate {
+                id: aptDelegate
                 text: validAptStyleListView.resolveStyle(modelData)
+
+                height: validAptStyleListView.delHeight
 
                 anchors.left: parent ? parent.left : undefined
                 anchors.right: parent ? parent.right : undefined
@@ -148,29 +165,63 @@ Flickable {
             }
         }
 
-        /*
-        RowLayout {
+        MapSourceModel {
+            id: mapSourceModel
+        }
+
+        Text {
+            id: mapTypeLabel
+            text: qsTr("Map Source")
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            font.pointSize: 24
+
             Layout.fillWidth: true
+        }
 
-            Layout.maximumHeight: 25
+        ComboBox {
+            id: mapSourceCombo
+            Layout.fillWidth: true
+            model: mapSourceModel
+            textRole: "name"
 
-            Label {
-                id: mapTypeLabel
-                text: qsTr("Map Type")
+            property string previousSource: ""
 
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+            Component.onCompleted: {
+                for(var i = 0; i < mapSourceModel.count; i++) {
+                    if(mapSourceModel.get(i).url === AppSettings.mapSource) {
+                        currentIndex = i;
+                        previousSource = AppSettings.mapSource;
+                        break;
+                    }
+                }
             }
-            SpinBox {
-                id: mapTypeSpinBox
-                from: 0
-                to: 5
-                value: AppSettings.mapTypeIndex
 
-                onValueChanged: AppSettings.mapTypeIndex = value
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+            onActivated: {
+                var newSource = mapSourceModel.get(currentIndex).url;
+                if (newSource !== previousSource) {
+                    AppSettings.mapSource = newSource;
+                    restartDialog.open();
+                }
             }
-        }*/
+
+            MessageDialog {
+                id: restartDialog
+                text: qsTr("Changing the map source requires restarting the application.\nDo you want to restart now?")
+                buttons: MessageDialog.Yes | MessageDialog.No
+
+                onAccepted: Controller.restart();
+
+                onRejected: {
+                    // Revert the combo box to the previous selection
+                    for(var i = 0; i < mapSourceModel.count; i++) {
+                        if(mapSourceModel.get(i).url === mapSourceCombo.previousSource) {
+                            mapSourceCombo.currentIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
