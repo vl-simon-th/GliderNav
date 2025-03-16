@@ -27,7 +27,6 @@
 #include <QNetworkReply>
 
 #include <QCoreApplication>
-#include <QProcess>
 
 class Controller : public QObject
 {
@@ -67,7 +66,7 @@ public:
 
     Q_INVOKABLE static QString unitToString(AltitudeUnit unit);
 
-    Q_INVOKABLE static void restart();
+    Q_INVOKABLE static void quit();
 
 public slots:
     void aptFileDownloaded(QNetworkReply *reply);

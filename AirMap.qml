@@ -18,8 +18,6 @@ Map {
     signal airportClicked(var coordinate)
     signal airportDoubleClicked(var coordinate)
 
-    signal updateAsLabels()
-
     Plugin {
         id: osmMapPlugin
         name: "osm"
@@ -34,7 +32,8 @@ Map {
     copyrightsVisible: false
 
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
-    zoomLevel: 14
+    zoomLevel: 10
+    maximumZoomLevel: 14.5
     property geoCoordinate startCentroid
 
     PinchHandler {
@@ -43,9 +42,6 @@ Map {
         onActiveChanged: {
             if (active) {
                 root.startCentroid = root.toCoordinate(pinch.centroid.position, false)
-            } else {
-                airspaceDescItemView.model.clear()
-                root.updateAsLabels()
             }
         }
         onScaleChanged: (delta) => {
@@ -64,23 +60,11 @@ Map {
                          : PointerDevice.Mouse
         rotationScale: 1/120
         property: "zoomLevel"
-        onActiveChanged: {
-            if(!active) {
-                airspaceDescItemView.model.clear()
-                root.updateAsLabels()
-            }
-        }
     }
     DragHandler {
         id: drag
         target: null
         onTranslationChanged: (delta) => root.pan(-delta.x, -delta.y)
-        onActiveChanged: {
-            if(!active) {
-                airspaceDescItemView.model.clear()
-                root.updateAsLabels()
-            }
-        }
         grabPermissions: PointerHandler.CanTakeOverFromAnything
     }
     Shortcut {
@@ -88,8 +72,6 @@ Map {
         sequence: StandardKey.ZoomIn
         onActivated: {
             root.zoomLevel = Math.round(root.zoomLevel + 1)
-            airspaceDescItemView.model.clear()
-            root.updateAsLabels()
         }
     }
     Shortcut {
@@ -97,8 +79,6 @@ Map {
         sequence: StandardKey.ZoomOut
         onActivated: {
             root.zoomLevel = Math.round(root.zoomLevel - 1)
-            airspaceDescItemView.model.clear()
-            root.updateAsLabels()
         }
     }
 
@@ -248,6 +228,9 @@ Map {
 
         model: ListModel {}
 
+        add: Transition{}
+        remove: Transition{}
+
         z: 1
 
         delegate: MapQuickItem {
@@ -274,6 +257,13 @@ Map {
             }
         }
     }
+
+    signal updateAsLabelsSignal()
+    function updateAsLabels() {
+        airspaceDescItemView.model.clear()
+        updateAsLabelsSignal()
+    }
+
 
     MapItemView {
         id: airspacesItemView
@@ -361,24 +351,47 @@ Map {
 
             Connections {
                 target: root
-                function onUpdateAsLabels() {
+                function onUpdateAsLabelsSignal() {
                     airspacePolyline.updateLabelModel()
                 }
             }
         }
     }
 
+    property int lastZoomLevelStep : 0
     onZoomLevelChanged: {
+        if(root.zoomLevel > 16) root.zoomLevel = 16
+
         Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
         Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);
 
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+
+        var zoomLevelStep = Math.pow(root.zoomLevel-7, 2) * 0.2
+        if(root.lastZoomLevelStep !== Math.round(zoomLevelStep)) {
+            root.lastZoomLevelStep = Math.round(zoomLevelStep)
+            root.updateAsLabels()
+        }
     }
 
+    property geoCoordinate lastCenter : QtPositioning.coordinate(0, 0)
     onCenterChanged: {
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+
+        var p1 = root.fromCoordinate(lastCenter, false)
+        var p2 = root.fromCoordinate(root.center, false)
+
+        var dx = p2.x - p1.x
+        var dy = p2.y - p1.y
+
+        var dist = Math.sqrt(dx**2 + dy**2)
+
+        if(dist > 100) {
+            root.lastCenter = root.center
+            root.updateAsLabels()
+        }
     }
 
     Component.onCompleted: {

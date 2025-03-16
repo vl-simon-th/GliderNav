@@ -207,10 +207,10 @@ Flickable {
 
             MessageDialog {
                 id: restartDialog
-                text: qsTr("Changing the map source requires restarting the application.\nDo you want to restart now?")
+                text: qsTr("Changing the map source requires restarting the application.\nDo you want to quit now?")
                 buttons: MessageDialog.Yes | MessageDialog.No
 
-                onAccepted: Controller.restart();
+                onAccepted: Controller.quit();
 
                 onRejected: {
                     // Revert the combo box to the previous selection

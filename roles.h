@@ -28,7 +28,10 @@ enum AsAptModelRoles {
     LowerAltitudeUnitsRole,
     UpperAltitudeUnitsRole,
     CoordinatesRole,
-    GeoBoundingRect
+    GeoBoundingRect,
+
+    //Log
+    PointRole
 };
 Q_ENUM_NS(AsAptModelRoles)
 QML_NAMED_ELEMENT(Roles)
