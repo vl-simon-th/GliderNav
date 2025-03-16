@@ -24,7 +24,9 @@ Map {
         PluginParameter { name: "osm.useragent"; value: "GliderNav" }
         PluginParameter { name: "osm.mapping.custom.host"; value: AppSettings.mapSource }
         PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
-        PluginParameter { name: "osm.mapping.cache.disk.size"; value: 0 }
+        PluginParameter { name: "osm.mapping.cache.directory";
+            value: (StandardPaths.writableLocation(StandardPaths.writableLocation(StandardPaths.GenericCacheLocation) !== "" ?
+                       StandardPaths.GenericCacheLocation : StandardPaths.CacheLocation) + "/QtLocation/" + encodeURIComponent(AppSettings.mapSource)).slice(6)}
     }
     plugin: osmMapPlugin
     activeMapType: supportedMapTypes[supportedMapTypes.length - 1]
