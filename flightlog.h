@@ -54,13 +54,9 @@ public:
 signals:
 
     void pathChanged();
-
     void startTimeChanged();
-
     void endTimeChanged();
-
     void timestampsChanged();
-
     void colorsChanged();
 
 private:

@@ -31,7 +31,10 @@ enum AsAptModelRoles {
     GeoBoundingRect,
 
     //Log
-    PointRole
+    PointRole,
+    NextPointRole,
+    ColorRole,
+    TimestampRole
 };
 Q_ENUM_NS(AsAptModelRoles)
 QML_NAMED_ELEMENT(Roles)

@@ -99,6 +99,7 @@ qt_add_qml_module(GliderNav
     QML_FILES
     QML_FILES AirportMenu.qml
     QML_FILES MapSourceModel.qml
+    SOURCES
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

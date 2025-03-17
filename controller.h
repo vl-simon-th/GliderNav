@@ -9,6 +9,7 @@
 
 #include "flightlog.h"
 #include "flightloglist.h"
+#include "flightlogmodel.h"
 
 #include "airportmodel.h"
 #include "airspacemodel.h"

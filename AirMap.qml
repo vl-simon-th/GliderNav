@@ -84,54 +84,34 @@ Map {
         }
     }
 
-    property list<MapPolyline> logPolylines : []
+    FlightLogModel {
+        id: currentLogModel
+        log: currentFlightLog
 
-    function resetLogPolylines() {
-        for(var i = 0; i < logPolylines.length; i++) {
-            root.removeMapItem(logPolylines[i])
+        onLogChanged: {
+            logMapItemView.model = null
+            logMapItemView.model = currentLogModel
         }
-        logPolylines = []
+
+        onVisiblePathChanged: {
+            logMapItemView.model = null
+            logMapItemView.model = currentLogModel
+        }
     }
 
-    Component {
-        id: logPolylineAddFactory
-        MapPolyline {
-            id: logPolyline
-            required property int pathIndex
+    MapItemView {
+        id: logMapItemView
+
+        model: currentLogModel
+
+        add: Transition {}
+        remove: Transition {}
+
+        delegate: MapPolyline {
+            path: [model.point, model.nextPoint]
+
+            line.color: model.color
             line.width: 3
-
-            Component.onCompleted: {
-                logPolyline.path = [currentFlightLog.path[logPolyline.pathIndex], currentFlightLog.path[logPolyline.pathIndex+1]]
-                logPolyline.line.color = currentFlightLog.colors[logPolyline.pathIndex]
-            }
-        }
-    }
-    function addLatestLogLine() {
-        var logPolyline = logPolylineAddFactory.createObject(root, {pathIndex: currentFlightLog.path.length-2})
-        logPolylines.push(logPolyline)
-        root.addMapItem(logPolyline)
-    }
-
-    function loadAllLogPoints() {
-        for(var i = 0; i < currentFlightLog.path.length-2; i++) {
-            var logPolyline = logPolylineAddFactory.createObject(root, {pathIndex: i})
-            logPolylines.push(logPolyline)
-            root.addMapItem(logPolyline)
-        }
-    }
-
-    Connections {
-        target: currentFlightLog
-        function onPathChanged() {
-            if(currentFlightLog.path.length > 1) {
-                addLatestLogLine()
-            }
-        }
-    }
-    onCurrentFlightLogChanged: {
-        resetLogPolylines()
-        if(currentFlightLog) {
-            loadAllLogPoints()
         }
     }
 
@@ -374,6 +354,8 @@ Map {
         if(root.lastZoomLevelStep !== Math.round(zoomLevelStep)) {
             root.lastZoomLevelStep = Math.round(zoomLevelStep)
             root.updateAsLabels()
+
+            currentLogModel.updateViewArea(root.visibleRegion);
         }
     }
 
@@ -393,6 +375,8 @@ Map {
         if(dist > 100) {
             root.lastCenter = root.center
             root.updateAsLabels()
+
+            currentLogModel.updateViewArea(root.visibleRegion);
         }
     }
 
