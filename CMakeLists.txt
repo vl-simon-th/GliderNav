@@ -42,6 +42,10 @@ set_source_files_properties(AppSettings.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
 )
 
+set_source_files_properties(MapSourceModel.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
+
 qt_add_resources(GliderNav "configuration"
     PREFIX "/"
     FILES

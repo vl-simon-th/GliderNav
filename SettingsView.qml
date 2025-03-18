@@ -165,10 +165,6 @@ Flickable {
             }
         }
 
-        MapSourceModel {
-            id: mapSourceModel
-        }
-
         Text {
             id: mapTypeLabel
             text: qsTr("Map Source")
@@ -182,44 +178,25 @@ Flickable {
         ComboBox {
             id: mapSourceCombo
             Layout.fillWidth: true
-            model: mapSourceModel
+            model: MapSourceModel.model
             textRole: "name"
 
             property string previousSource: ""
 
             Component.onCompleted: {
-                for(var i = 0; i < mapSourceModel.count; i++) {
-                    if(mapSourceModel.get(i).url === AppSettings.mapSource) {
+                for(var i = 0; i < MapSourceModel.model.count; i++) {
+                    if(MapSourceModel.model.get(i).name === AppSettings.mapSourceName) {
                         currentIndex = i;
-                        previousSource = AppSettings.mapSource;
+                        previousSource = MapSourceModel.model.get(i).url;
                         break;
                     }
                 }
             }
 
             onActivated: {
-                var newSource = mapSourceModel.get(currentIndex).url;
+                var newSource = MapSourceModel.model.get(currentIndex).url;
                 if (newSource !== previousSource) {
-                    AppSettings.mapSource = newSource;
-                    restartDialog.open();
-                }
-            }
-
-            MessageDialog {
-                id: restartDialog
-                text: qsTr("Changing the map source requires restarting the application.\nDo you want to quit now?")
-                buttons: MessageDialog.Yes | MessageDialog.No
-
-                onAccepted: Controller.quit();
-
-                onRejected: {
-                    // Revert the combo box to the previous selection
-                    for(var i = 0; i < mapSourceModel.count; i++) {
-                        if(mapSourceModel.get(i).url === mapSourceCombo.previousSource) {
-                            mapSourceCombo.currentIndex = i;
-                            break;
-                        }
-                    }
+                    AppSettings.mapSourceName = MapSourceModel.model.get(currentIndex).name;
                 }
             }
         }

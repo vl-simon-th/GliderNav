@@ -18,24 +18,114 @@ Map {
     signal airportClicked(var coordinate)
     signal airportDoubleClicked(var coordinate)
 
-    Plugin {
-        id: osmMapPlugin
-        name: "osm"
-        PluginParameter { name: "osm.useragent"; value: "GliderNav" }
-        PluginParameter { name: "osm.mapping.custom.host"; value: AppSettings.mapSource }
-        PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
-        PluginParameter { name: "osm.mapping.cache.directory";
-            value: (StandardPaths.writableLocation(StandardPaths.writableLocation(StandardPaths.GenericCacheLocation) !== "" ?
-                       StandardPaths.GenericCacheLocation : StandardPaths.CacheLocation) + "/QtLocation/" + encodeURIComponent(AppSettings.mapSource)).slice(6)}
+    //Maps
+    Loader {
+        id: mapLoader
+        anchors.fill: parent
+
+        z: root.z-1
+
+        sourceComponent: Map {
+            id: backgroundMap
+
+            center: root.center
+            minimumFieldOfView: root.minimumFieldOfView
+            maximumFieldOfView: root.maximumFieldOfView
+            minimumTilt: root.minimumTilt
+            maximumTilt: root.maximumTilt
+            minimumZoomLevel: root.minimumZoomLevel
+            maximumZoomLevel: root.maximumZoomLevel
+            zoomLevel: root.zoomLevel
+            tilt: root.tilt;
+            bearing: root.bearing
+            fieldOfView: root.fieldOfView
+            z: root.z - 1
+            color: AppSettings.mapSourceName === "SoaringWeatherEurope" ? "transparent" : "grey"
+
+            activeMapType: supportedMapTypes[supportedMapTypes.length-1]
+
+            Plugin {
+                id: osmMapPlugin
+                name: "osm"
+
+                PluginParameter { name: "osm.mapping.custom.host"; value: MapSourceModel.resolveNameToUrl(AppSettings.mapSourceName)}
+                PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
+
+                PluginParameter { name: "osm.mapping.cache.directory";
+                    value: (StandardPaths.writableLocation(StandardPaths.writableLocation(StandardPaths.GenericCacheLocation) !== "" ?
+                               StandardPaths.GenericCacheLocation : StandardPaths.CacheLocation) + "/QtLocation/" + AppSettings.mapSourceName).slice(6)}
+                PluginParameter { name: "osm.mapping.cache.disk.cost_strategy"; value: "unitary"}
+                PluginParameter { name: "osm.mapping.cache.disk.size"; value: MapSourceModel.cache(AppSettings.mapSourceName) ? 1000 : 0}
+            }
+
+            plugin: osmMapPlugin
+
+            Loader {
+                id: backgroundMapLoader
+
+                anchors.fill: parent
+                active: AppSettings.mapSourceName === "SoaringWeatherEurope"
+
+                z: backgroundMap.z-1
+
+                sourceComponent: Map {
+                    center: root.center
+                    minimumFieldOfView: root.minimumFieldOfView
+                    maximumFieldOfView: root.maximumFieldOfView
+                    minimumTilt: root.minimumTilt
+                    maximumTilt: root.maximumTilt
+                    minimumZoomLevel: root.minimumZoomLevel
+                    maximumZoomLevel: root.maximumZoomLevel
+                    zoomLevel: root.zoomLevel
+                    tilt: root.tilt;
+                    bearing: root.bearing
+                    fieldOfView: root.fieldOfView
+                    z: backgroundMap.z - 1
+
+                    activeMapType: supportedMapTypes[supportedMapTypes.length-1]
+
+                    plugin: Plugin {
+                        name: "osm"
+
+                        PluginParameter { name: "osm.mapping.custom.host"; value: MapSourceModel.resolveNameToUrl("WeGlideMap")}
+                        PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
+
+                        PluginParameter { name: "osm.mapping.cache.directory";
+                            value: (StandardPaths.writableLocation(StandardPaths.writableLocation(StandardPaths.GenericCacheLocation) !== "" ?
+                                       StandardPaths.GenericCacheLocation : StandardPaths.CacheLocation) + "/QtLocation/WeGlideMap").slice(6)}
+                    }
+                }
+            }
+        }
     }
-    plugin: osmMapPlugin
-    activeMapType: supportedMapTypes[supportedMapTypes.length - 1]
+
+    Connections {
+        target: AppSettings
+        function onMapSourceNameChanged() {
+            mapLoader.active = false
+            mapLoader.active = true
+        }
+
+        function satelliteUpdate() {
+            mapLoader.active = false
+            mapLoader.active = true
+            console.log("Satellite Update")
+        }
+    }
+
+    //Items
+    Plugin {
+        id: overlayPlugin
+        name: "itemsoverlay"
+    }
+    plugin: overlayPlugin
 
     copyrightsVisible: false
 
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 10
     maximumZoomLevel: 14.5
+    color: 'transparent'
     property geoCoordinate startCentroid
 
     PinchHandler {
@@ -167,6 +257,8 @@ Map {
                     y: -30
                     anchors.horizontalCenter: parent.horizontalCenter
                     visible: root.zoomLevel > 10.35
+
+                    color: MapSourceModel.resolveName(AppSettings.mapSourceName).aptColor
                 }
                 AbstractButton {
                     height: root.zoomLevel > 7 ? 40 : 30
@@ -177,7 +269,7 @@ Map {
                         height: parent.height / 2
                         width: height
                         color: "transparent"
-                        border.color: "black"
+                        border.color: MapSourceModel.resolveName(AppSettings.mapSourceName).aptColor
                         border.width: root.zoomLevel > 7 ? 4 : 2
 
                         radius: height/2
@@ -187,7 +279,7 @@ Map {
                         height: parent.height
                         width: parent.width / 4.5
                         color: "transparent"
-                        border.color: "black"
+                        border.color: MapSourceModel.resolveName(AppSettings.mapSourceName).aptColor
                         border.width: root.zoomLevel > 7 ? 3 : 1.5
                     }
 
@@ -229,7 +321,7 @@ Map {
                 font.pixelSize: 16
 
                 horizontalAlignment: Text.AlignHCenter
-                color: "blue"
+                color: MapSourceModel.resolveName(AppSettings.mapSourceName).asColor
 
                 transform: Rotation {
                     origin.x: width/2
@@ -264,7 +356,7 @@ Map {
             required property list<geoCoordinate> coordinates
             required property string type
 
-            line.color: "blue"
+            line.color: MapSourceModel.resolveName(AppSettings.mapSourceName).asColor
             line.width: 1.5
 
             path: coordinates
