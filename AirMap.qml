@@ -35,12 +35,12 @@ Map {
             maximumTilt: root.maximumTilt
             minimumZoomLevel: root.minimumZoomLevel
             maximumZoomLevel: root.maximumZoomLevel
-            zoomLevel: root.zoomLevel
+            zoomLevel: Math.min(root.zoomLevel, maximumZoomLevel)
             tilt: root.tilt;
             bearing: root.bearing
             fieldOfView: root.fieldOfView
             z: root.z - 1
-            color: AppSettings.mapSourceName === "SoaringWeatherEurope" ? "transparent" : "grey"
+            color: AppSettings.mapSourceName.startsWith("SoaringWeatherEurope") ? "transparent" : "darkgrey"
 
             activeMapType: supportedMapTypes[supportedMapTypes.length-1]
 
@@ -64,7 +64,7 @@ Map {
                 id: backgroundMapLoader
 
                 anchors.fill: parent
-                active: AppSettings.mapSourceName === "SoaringWeatherEurope"
+                active: AppSettings.mapSourceName.startsWith("SoaringWeatherEurope")
 
                 z: backgroundMap.z-1
 
@@ -233,6 +233,80 @@ Map {
                 border.width: 2
             }
         }
+
+        property color sectorColor: "orange"
+
+        MapItemView {
+            model: currentTask ? currentTask.turnPoints.slice(1, -1) : []
+
+            add: Transition {}
+            remove: Transition {}
+
+            delegate: MapQuickItem {
+                id: sector
+                coordinate: modelData
+
+                sourceItem: SectorItem {
+                    x: -width/2
+                    y: -height/2
+
+                    coordinates: currentTask.turnPoints[index] && currentTask.turnPoints[index+1] && currentTask.turnPoints[index + 2] ?
+                                     [currentTask.turnPoints[index], currentTask.turnPoints[index+1], currentTask.turnPoints[index + 2]] :
+                                     [QtPositioning.coordinate(0,0), QtPositioning.coordinate(0,0), QtPositioning.coordinate(0,0)]
+
+                    color: taskMapItemGroup.sectorColor
+                    borderWidth: 3
+
+                    height: width
+                    width: 75
+                }
+            }
+        }
+
+        MapQuickItem {
+            id: startLine
+
+            coordinate: currentTask && currentTask.turnPoints[0] ? currentTask.turnPoints[0] : QtPositioning.coordinate()
+
+            sourceItem: Item {
+
+                x: -width/2
+                y: -height/2
+
+                width: 50
+                height: 3
+
+                Rectangle {
+
+                    anchors.fill: parent
+
+                    color: taskMapItemGroup.sectorColor
+
+                    rotation: currentTask && currentTask.turnPoints[0] && currentTask.turnPoints[1] ?
+                                  currentTask.turnPoints[0].azimuthTo(currentTask.turnPoints[1]) : 10
+                }
+            }
+        }
+
+        MapCircle {
+            center: currentTask && currentTask.turnPoints[0] ? currentTask.turnPoints[0] : QtPositioning.coordinate()
+
+            radius: 1000
+            color: "transparent"
+
+            border.color: taskMapItemGroup.sectorColor
+            border.width: 2
+        }
+
+        MapCircle {
+            center: currentTask && currentTask.turnPoints.length > 1 ? currentTask.turnPoints[currentTask.turnPoints.length-1] : QtPositioning.coordinate()
+
+            radius: 1000
+            color: "transparent"
+
+            border.color: taskMapItemGroup.sectorColor
+            border.width: 2
+        }
     }
 
     MapItemView {
@@ -357,7 +431,7 @@ Map {
             required property string type
 
             line.color: MapSourceModel.resolveName(AppSettings.mapSourceName).asColor
-            line.width: 1.5
+            line.width: 2
 
             path: coordinates
 
@@ -434,7 +508,6 @@ Map {
 
     property int lastZoomLevelStep : 0
     onZoomLevelChanged: {
-        if(root.zoomLevel > 16) root.zoomLevel = 16
 
         Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
         Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);

@@ -181,23 +181,17 @@ Flickable {
             model: MapSourceModel.model
             textRole: "name"
 
-            property string previousSource: ""
-
             Component.onCompleted: {
                 for(var i = 0; i < MapSourceModel.model.count; i++) {
                     if(MapSourceModel.model.get(i).name === AppSettings.mapSourceName) {
                         currentIndex = i;
-                        previousSource = MapSourceModel.model.get(i).url;
                         break;
                     }
                 }
             }
 
             onActivated: {
-                var newSource = MapSourceModel.model.get(currentIndex).url;
-                if (newSource !== previousSource) {
-                    AppSettings.mapSourceName = MapSourceModel.model.get(currentIndex).name;
-                }
+                AppSettings.mapSourceName = MapSourceModel.model.get(currentIndex).name;
             }
         }
     }
