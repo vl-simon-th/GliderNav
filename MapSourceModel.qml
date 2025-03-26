@@ -23,8 +23,8 @@ Item {
         return year + "/" + month + "/" + day + "/" + hour + minute;
     }
 
-    property color defaultAptColor: Qt.color("black")
-    property color defaultAsColor: Qt.color("blue")
+    property color defaultAptColor: Qt.color("darkgreen")
+    property color defaultAsColor: Qt.color("deepskyblue")
 
     property var data : [{
         "name": "OpenStreetMap",
@@ -63,7 +63,39 @@ Item {
         "url": "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+0/%z/%x/%y.dist.1400.png",
         "attribution": "SoaringWeatherEurope",
         "cache": false,
-        "aptColor": Qt.color("orange"),
+        "aptColor": root.defaultAptColor,
+        "asColor": root.defaultAsColor,
+    },
+    {
+        "name": "SoaringWeatherEurope + 1",
+        "url": "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+1/%z/%x/%y.dist.1400.png",
+        "attribution": "SoaringWeatherEurope",
+        "cache": false,
+        "aptColor": root.defaultAptColor,
+        "asColor": root.defaultAsColor,
+    },
+    {
+        "name": "SoaringWeatherEurope + 2",
+        "url": "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+2/%z/%x/%y.dist.1400.png",
+        "attribution": "SoaringWeatherEurope",
+        "cache": false,
+        "aptColor": root.defaultAptColor,
+        "asColor": root.defaultAsColor,
+    },
+    {
+        "name": "Satellite Google",
+        "url": "https://mt1.google.com/vt/lyrs=s&x=%x&y=%y&z=%z",
+        "attribution": "Google",
+        "cache": true,
+        "aptColor": root.defaultAptColor,
+        "asColor": root.defaultAsColor,
+    },
+    {
+        "name": "Hybrid Google",
+        "url": "https://mt1.google.com/vt/lyrs=y&x=%x&y=%y&z=%z",
+        "attribution": "Google",
+        "cache": true,
+        "aptColor": root.defaultAptColor,
         "asColor": root.defaultAsColor,
     }
     ]
@@ -75,7 +107,6 @@ Item {
     }
 
     signal satelliteUpdate()
-    /*
     Timer {
         interval: 5 * 60 * 1000
         repeat: true
@@ -96,7 +127,7 @@ Item {
                 root.satelliteUpdate()
             }
         }
-    }*/
+    }
 
     function resolveName(name) {
         for(var i = 0; i < data.length; i++) {
