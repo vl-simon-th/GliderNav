@@ -3,135 +3,88 @@ import QtQml
 import QtQml.Models
 import QtQuick
 
-Item {
+ListModel {
     id: root
 
-    property ListModel model: listModel
-
-    ListModel {
-        id: listModel
-    }
-
-    function getCurrentDateTime() {
-        var date = new Date(); // Get the current date and time
-        var year = date.getUTCFullYear();
-        var month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
-        var day = ("0" + date.getUTCDate()).slice(-2);
-        var hour = ("0" + date.getUTCHours()).slice(-2);
-        var minute = ("0" + date.getUTCMinutes()).slice(-2);
-
-        return year + "/" + month + "/" + day + "/" + hour + minute;
-    }
-
-    property color defaultAptColor: Qt.color("darkgreen")
+    property color defaultAptColor: Qt.color("darkviolet")
     property color defaultAsColor: Qt.color("deepskyblue")
 
-    property var data : [{
-        "name": "OpenStreetMap",
-        "url": "http://b.tile.openstreetmap.org/",
-        "attribution": "© OpenStreetMap contributors",
-        "cache": true,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "OpenTopoMap",
-        "url": "https://a.tile.opentopomap.org/",
-        "attribution": "© OpenTopoMap contributors",
-        "cache": true,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "WeGlideMap",
-        "url": "https://dmt-wgld.b-cdn.net/dmt_hypsometric/dmt_hypsometric/",
-        "attribution": "WeGlide",
-        "cache": true,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "SkySightSatellite",
-        "url": "https://satellite.skysight.io/tiles/%z/%x/%y?date="+ root.getCurrentDateTime() +"&mtg=true.png",
-        "attribution": "SkySight",
-        "cache": false,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "SoaringWeatherEurope",
-        "url": "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+0/%z/%x/%y.dist.1400.png",
-        "attribution": "SoaringWeatherEurope",
-        "cache": false,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "SoaringWeatherEurope + 1",
-        "url": "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+1/%z/%x/%y.dist.1400.png",
-        "attribution": "SoaringWeatherEurope",
-        "cache": false,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "SoaringWeatherEurope + 2",
-        "url": "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+2/%z/%x/%y.dist.1400.png",
-        "attribution": "SoaringWeatherEurope",
-        "cache": false,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "Satellite Google",
-        "url": "https://mt1.google.com/vt/lyrs=s&x=%x&y=%y&z=%z",
-        "attribution": "Google",
-        "cache": true,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
-    },
-    {
-        "name": "Hybrid Google",
-        "url": "https://mt1.google.com/vt/lyrs=y&x=%x&y=%y&z=%z",
-        "attribution": "Google",
-        "cache": true,
-        "aptColor": root.defaultAptColor,
-        "asColor": root.defaultAsColor,
+    ListElement {
+        name: "OpenStreetMap"
+        url: "http://b.tile.openstreetmap.org/"
+        attribution: "© OpenStreetMap contributors"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 14.5
     }
-    ]
-
-    Component.onCompleted: {
-        for(var i = 0; i < data.length; i++) {
-            model.append(root.data[i])
-        }
+    ListElement {
+        name: "OpenTopoMap"
+        url: "https://a.tile.opentopomap.org/"
+        attribution: "© OpenTopoMap contributors"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 14.5
     }
-
-    signal satelliteUpdate()
-    Timer {
-        interval: 5 * 60 * 1000
-        repeat: true
-
-        running: AppSettings.mapSourceName === "SkySightSatellite"
-        triggeredOnStart: true
-
-        onTriggered: {
-            for(var i = 0; i < data.length; i++) {
-                if(data[i].name === "SkySightSatellite") {
-                    data[i].url = "https://satellite.skysight.io/tiles/%z/%x/%y?date="+ root.getCurrentDateTime() +"&mtg=true.png"
-                    model.clear()
-                    for(var j = 0; j < data.length; j++) {
-                        model.append(root.data[j])
-                    }
-                    break
-                }
-                root.satelliteUpdate()
-            }
-        }
+    ListElement {
+        name: "WeGlideMap"
+        url: "https://dmt-wgld.b-cdn.net/dmt_hypsometric/dmt_hypsometric/"
+        attribution: "WeGlide"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 14.5
+    }
+    ListElement {
+        name: "SoaringWeatherEurope"
+        url: "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+0/%z/%x/%y.dist.1400.png"
+        attribution: "SoaringWeatherEurope"
+        cache: false
+        aptColor: "darkviolet"
+        asColor: "deepskyblue"
+        maxZoomLevel: 14.5
+    }
+    ListElement {
+        name: "SoaringWeatherEurope + 1"
+        url: "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+1/%z/%x/%y.dist.1400.png"
+        attribution: "SoaringWeatherEurope"
+        cache: false
+        aptColor: "darkviolet"
+        asColor: "deepskyblue"
+        maxZoomLevel: 14.5
+    }
+    ListElement {
+        name: "SoaringWeatherEurope + 2"
+        url: "https://rasp.skyltdirect.se/scandinavia/dtiles/curr+2/%z/%x/%y.dist.1400.png"
+        attribution: "SoaringWeatherEurope"
+        cache: false
+        aptColor: "darkviolet"
+        asColor: "deepskyblue"
+        maxZoomLevel: 14.5
+    }
+    ListElement {
+        name: "Satellite Google"
+        url: "https://mt1.google.com/vt/lyrs=s&x=%x&y=%y&z=%z"
+        attribution: "Google"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 18
+    }
+    ListElement {
+        name: "Hybrid Google"
+        url: "https://mt1.google.com/vt/lyrs=y&x=%x&y=%y&z=%z"
+        attribution: "Google"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 18
     }
 
     function resolveName(name) {
-        for(var i = 0; i < data.length; i++) {
-            if(data[i].name === name) return data[i]
+        for(var i = 0; i < count; i++) {
+            if(get(i).name === name) return get(i)
         }
         return 0
     }
@@ -142,5 +95,9 @@ Item {
 
     function cache(name) {
         return resolveName(name).cache
+    }
+
+    function maxZoomLevel(name) {
+        return resolveName(name).maxZoomLevel
     }
 }

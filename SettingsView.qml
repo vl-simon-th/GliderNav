@@ -178,12 +178,12 @@ Flickable {
         ComboBox {
             id: mapSourceCombo
             Layout.fillWidth: true
-            model: MapSourceModel.model
+            model: MapSourceModel
             textRole: "name"
 
             Component.onCompleted: {
-                for(var i = 0; i < MapSourceModel.model.count; i++) {
-                    if(MapSourceModel.model.get(i).name === AppSettings.mapSourceName) {
+                for(var i = 0; i < MapSourceModel.count; i++) {
+                    if(MapSourceModel.get(i).name === AppSettings.mapSourceName) {
                         currentIndex = i;
                         break;
                     }
@@ -191,7 +191,7 @@ Flickable {
             }
 
             onActivated: {
-                AppSettings.mapSourceName = MapSourceModel.model.get(currentIndex).name;
+                AppSettings.mapSourceName = MapSourceModel.get(currentIndex).name;
             }
         }
     }

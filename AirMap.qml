@@ -124,7 +124,7 @@ Map {
 
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 10
-    maximumZoomLevel: 14.5
+    maximumZoomLevel: MapSourceModel.maxZoomLevel(AppSettings.mapSourceName)
     color: 'transparent'
     property geoCoordinate startCentroid
 
@@ -515,12 +515,12 @@ Map {
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
 
+        currentLogModel.updateViewArea(root.visibleRegion);
+
         var zoomLevelStep = Math.pow(root.zoomLevel-7, 2) * 0.2
         if(root.lastZoomLevelStep !== Math.round(zoomLevelStep)) {
             root.lastZoomLevelStep = Math.round(zoomLevelStep)
             root.updateAsLabels()
-
-            currentLogModel.updateViewArea(root.visibleRegion);
         }
     }
 
@@ -537,11 +537,11 @@ Map {
 
         var dist = Math.sqrt(dx**2 + dy**2)
 
+        currentLogModel.updateViewArea(root.visibleRegion);
+
         if(dist > 100) {
             root.lastCenter = root.center
             root.updateAsLabels()
-
-            currentLogModel.updateViewArea(root.visibleRegion);
         }
     }
 
