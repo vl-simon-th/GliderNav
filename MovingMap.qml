@@ -6,6 +6,8 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 import QtCore
 
+import QtQuick.Layouts
+
 import GliderNav
 
 Item {
@@ -21,7 +23,14 @@ Item {
         currentTask: Controller.currentTask
         currentFlightLog: Controller.currentLog
 
+        property bool reCenter : false
+
+        onMovedByHand: reCenter = false
+        onCenterButtonClicked: reCenter = true
+
         property Position userPos : Position{}
+        property list<geoCoordinate> lastUserPosCoords : []
+
         property geoCoordinate goal: QtPositioning.coordinate()
 
         MapQuickItem {
@@ -61,6 +70,17 @@ Item {
             userPos = pos
             if(Controller.currentLog) {
                 Controller.currentLog.addPoint(pos.coordinate)
+            }
+            lastUserPosCoords.push(pos.coordinate)
+
+            if(lastUserPosCoords.length > 10) {
+                lastUserPosCoords.shift()
+            }
+
+            glideRatioLabel.updateCurrentGlideRatio(lastUserPosCoords)
+
+            if(reCenter) {
+                airMap.center = userPos
             }
         }
 
@@ -144,26 +164,70 @@ Item {
         }
     }
 
-    Label {
-        id: heightLabel
-        text: airMap.userPos.altitudeValid ? Math.round(airMap.userPos.coordinate.altitude) + " m" : "--- m"
-
-        height: startLogButton.height
-        width: Math.max(startLogButton.width, contentWidth + 10)
+    ColumnLayout {
+        id: infoLayout
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 4
 
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
+        Label {
+            id: heightLabel
+            text: airMap.userPos.altitudeValid ? Math.round(airMap.userPos.coordinate.altitude) + " m" : "--- m"
+
+            Layout.preferredHeight: startLogButton.height
+            Layout.minimumWidth: Math.max(startLogButton.width, contentWidth + 8)
+            Layout.fillWidth: true
+
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
 
 
-        background: Rectangle {
-            radius: 4
-            border.color: "grey"
-            border.width: 2
-            color: "white"
+            background: Rectangle {
+                radius: 4
+                border.color: "grey"
+                border.width: 2
+                color: "white"
+            }
+        }
+
+        Label {
+            id: glideRatioLabel
+
+            function updateCurrentGlideRatio(posList) {
+                var gr = ""
+                if(posList.length > 1) {
+                    if(posList[posList.length-1].altitude === posList[0].altitude) {
+                        gr = "-"
+                    } else {
+                        var d_h = posList[posList.length-1].altitude - posList[0].altitude
+                        var d_x = posList[posList.length-1].distanceTo(posList[0])
+
+                        gr = Math.round(d_x / d_h)
+                    }
+                } else {
+                    gr = "-"
+                }
+
+                glideRatioLabel.text = gr + " : 1"
+            }
+
+            text: "- : 1"
+
+            Layout.preferredHeight: startLogButton.height
+            Layout.minimumWidth: Math.max(startLogButton.width, contentWidth + 8)
+            Layout.fillWidth: true
+
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+
+            background: Rectangle {
+                radius: 4
+                border.color: "grey"
+                border.width: 2
+                color: "white"
+            }
         }
     }
 

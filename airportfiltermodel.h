@@ -27,7 +27,7 @@ protected:
     bool filterAcceptsRow(int row, const QModelIndex &parent) const override;
 
 private:
-    QSet<int> validStyles = {2,4,5};
+    QSet<int> validStyles;
     QGeoShape viewArea;
     double zoomLevel;
 };

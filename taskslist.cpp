@@ -44,7 +44,7 @@ void TasksList::importTasksFromDir()
     QDir dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     if (!dir.exists("tasks")) {
-        qWarning() << "Logs directory does not exist:" << dir.absoluteFilePath("tasks");
+        qWarning() << "Tasks directory does not exist:" << dir.absoluteFilePath("tasks");
         return;
     }
 
@@ -59,7 +59,7 @@ void TasksList::importTasksFromDir()
         Task *task = Task::readFromDir(subDir);
         if (task) {
             tasks.append(task);
-            qDebug() << "Imported log from:" << subDir.absolutePath();
+            qDebug() << "Imported task from:" << subDir.absolutePath();
         }
     }
 

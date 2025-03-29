@@ -18,6 +18,9 @@ Map {
     signal airportClicked(var coordinate)
     signal airportDoubleClicked(var coordinate)
 
+    signal centerButtonClicked()
+    signal movedByHand()
+
     //Maps
     Loader {
         id: mapLoader
@@ -35,12 +38,12 @@ Map {
             maximumTilt: root.maximumTilt
             minimumZoomLevel: root.minimumZoomLevel
             maximumZoomLevel: root.maximumZoomLevel
-            zoomLevel: Math.min(root.zoomLevel, maximumZoomLevel)
+            zoomLevel: root.zoomLevel
             tilt: root.tilt;
             bearing: root.bearing
             fieldOfView: root.fieldOfView
             z: root.z - 1
-            color: AppSettings.mapSourceName.startsWith("SoaringWeatherEurope") ? "transparent" : "darkgrey"
+            color: "darkgrey"
 
             activeMapType: supportedMapTypes[supportedMapTypes.length-1]
 
@@ -59,43 +62,6 @@ Map {
             }
 
             plugin: osmMapPlugin
-
-            Loader {
-                id: backgroundMapLoader
-
-                anchors.fill: parent
-                active: AppSettings.mapSourceName.startsWith("SoaringWeatherEurope")
-
-                z: backgroundMap.z-1
-
-                sourceComponent: Map {
-                    center: root.center
-                    minimumFieldOfView: root.minimumFieldOfView
-                    maximumFieldOfView: root.maximumFieldOfView
-                    minimumTilt: root.minimumTilt
-                    maximumTilt: root.maximumTilt
-                    minimumZoomLevel: root.minimumZoomLevel
-                    maximumZoomLevel: root.maximumZoomLevel
-                    zoomLevel: root.zoomLevel
-                    tilt: root.tilt;
-                    bearing: root.bearing
-                    fieldOfView: root.fieldOfView
-                    z: backgroundMap.z - 1
-
-                    activeMapType: supportedMapTypes[supportedMapTypes.length-1]
-
-                    plugin: Plugin {
-                        name: "osm"
-
-                        PluginParameter { name: "osm.mapping.custom.host"; value: MapSourceModel.resolveNameToUrl("WeGlideMap")}
-                        PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
-
-                        PluginParameter { name: "osm.mapping.cache.directory";
-                            value: (StandardPaths.writableLocation(StandardPaths.writableLocation(StandardPaths.GenericCacheLocation) !== "" ?
-                                       StandardPaths.GenericCacheLocation : StandardPaths.CacheLocation) + "/QtLocation/WeGlideMap").slice(6)}
-                    }
-                }
-            }
         }
     }
 
@@ -120,8 +86,6 @@ Map {
     }
     plugin: overlayPlugin
 
-    copyrightsVisible: false
-
     center: QtPositioning.coordinate(48.689878, 9.221964) // Stuttgart
     zoomLevel: 10
     maximumZoomLevel: MapSourceModel.maxZoomLevel(AppSettings.mapSourceName)
@@ -139,6 +103,7 @@ Map {
         onScaleChanged: (delta) => {
             root.zoomLevel += Math.log2(delta)
             root.alignCoordinateToPoint(root.startCentroid, pinch.centroid.position)
+            root.movedByHand()
         }
         grabPermissions: PointerHandler.CanTakeOverFromAnything
     }
@@ -152,11 +117,17 @@ Map {
                          : PointerDevice.Mouse
         rotationScale: 1/120
         property: "zoomLevel"
+        onWheel: {
+            root.movedByHand()
+        }
     }
     DragHandler {
         id: drag
         target: null
-        onTranslationChanged: (delta) => root.pan(-delta.x, -delta.y)
+        onTranslationChanged: (delta) => {
+                                  root.pan(-delta.x, -delta.y)
+                                  root.movedByHand()
+                              }
         grabPermissions: PointerHandler.CanTakeOverFromAnything
     }
     Shortcut {
@@ -164,6 +135,7 @@ Map {
         sequence: StandardKey.ZoomIn
         onActivated: {
             root.zoomLevel = Math.round(root.zoomLevel + 1)
+            root.movedByHand()
         }
     }
     Shortcut {
@@ -171,6 +143,7 @@ Map {
         sequence: StandardKey.ZoomOut
         onActivated: {
             root.zoomLevel = Math.round(root.zoomLevel - 1)
+            root.movedByHand()
         }
     }
 
@@ -193,9 +166,6 @@ Map {
         id: logMapItemView
 
         model: currentLogModel
-
-        add: Transition {}
-        remove: Transition {}
 
         delegate: MapPolyline {
             path: [model.point, model.nextPoint]
@@ -593,6 +563,7 @@ Map {
 
         onClicked: {
             root.center = positionSource.position.coordinate
+            root.centerButtonClicked()
         }
 
         z: 10

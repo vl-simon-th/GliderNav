@@ -8,7 +8,7 @@ ApplicationWindow {
     visible: true
     title: qsTr("Glider Nav")
 
-    //flags: Qt.FramelessWindowHint
+    flags: Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
 
     SwipeView {
         id: swipeView
@@ -26,8 +26,6 @@ ApplicationWindow {
 
         MovingMap {
             id: movingMap
-
-            visible: swipeView.currentIndex === 1
         }
 
         LogsView {

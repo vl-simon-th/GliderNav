@@ -104,7 +104,7 @@ Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                text: root.airport.elevation + "m"
+                text: qsTr("Alt: ") + root.airport.elevation + "m"
                 horizontalAlignment: Text.AlignHCenter
             }
 
@@ -171,7 +171,7 @@ Item {
             State {
                 name: "inactive"
                 PropertyChanges {
-                    background.y: 0
+                    background.y: 80
                 }
             }
         ]

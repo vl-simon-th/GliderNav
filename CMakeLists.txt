@@ -5,7 +5,7 @@ project(GliderNav VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2)
+find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
 find_package(Qt6 REQUIRED COMPONENTS Positioning Network)
 
 qt_add_executable(GliderNav
@@ -23,6 +23,7 @@ set_target_properties(GliderNav PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/GliderNav.entitlements"
     XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME AppIcon
+    QT_IOS_LAUNCH_SCREEN "${CMAKE_CURRENT_SOURCE_DIR}/ios/LaunchScreen.storyboard" 
 
     WIN32_EXECUTABLE TRUE
 )
@@ -113,8 +114,6 @@ if(IOS)
     set(asset_catalog_path "ios/Assets.xcassets")
     target_sources(GliderNav PRIVATE "${asset_catalog_path}")
     set_source_files_properties(${asset_catalog_path} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-    set_target_properties(GliderNav
-        PROPERTIES XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME AppIcon)
 endif()
 
 #include(GNUInstallDirs)

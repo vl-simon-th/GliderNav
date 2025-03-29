@@ -55,5 +55,10 @@
     <key>UIUserInterfaceStyle</key>
     <string>Light</string>
 
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
+
 </dict>
 </plist>

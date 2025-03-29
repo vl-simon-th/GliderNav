@@ -68,6 +68,23 @@ Flickable {
 
                 onToggled: {
                     Controller.airspaceFilterModel.updateValidTypes(modelData, checked)
+
+                    if(checked) {
+                        if(!AppSettings.validAsTypes.includes(modelData)) {
+                            AppSettings.validAsTypes.push(modelData)
+                        }
+                    } else {
+                        var index = AppSettings.validAsTypes.indexOf(modelData);
+                        if (index !== -1) {
+                          AppSettings.validAsTypes.splice(index, 1);
+                        }
+                    }
+                }
+            }
+
+            Component.onCompleted: {
+                for(var i = 0; i < AppSettings.validAsTypes.length; i++) {
+                    Controller.airspaceFilterModel.updateValidTypes(AppSettings.validAsTypes[i], true)
                 }
             }
         }
@@ -110,6 +127,23 @@ Flickable {
 
                 onToggled: {
                     Controller.airportFilterModel.updateValidStyle(modelData, checked)
+
+                    if(checked) {
+                        if(!AppSettings.validAptStyles.includes(modelData)) {
+                            AppSettings.validAptStyles.push(modelData)
+                        }
+                    } else {
+                        var index = AppSettings.validAptStyles.indexOf(modelData);
+                        if (index !== -1) {
+                          AppSettings.validAptStyles.splice(index, 1);
+                        }
+                    }
+                }
+            }
+
+            Component.onCompleted: {
+                for(var i = 0; i < AppSettings.validAptStyles.length; i++) {
+                    Controller.airportFilterModel.updateValidStyle(AppSettings.validAptStyles[i], true)
                 }
             }
 
