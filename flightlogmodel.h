@@ -32,9 +32,6 @@ public slots:
     void updateViewArea(const QGeoShape &newViewArea);
     void updateModel();
 
-private slots:
-    void connectLog();
-
 signals:
     void logChanged();
     void visiblePathChanged();

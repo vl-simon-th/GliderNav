@@ -10,20 +10,29 @@ import QtCore
 Flickable {
     id: root
 
+    required property var safeAreaMargins
+
     flickableDirection: Flickable.VerticalFlick
 
     contentWidth: width
-    contentHeight: mainLayout.height + 20
+    contentHeight: mainLayout.height + 70
 
     ColumnLayout {
         id: mainLayout
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.margins: 6
+
+        anchors.topMargin: root.safeAreaMargins.top
+        anchors.leftMargin: root.safeAreaMargins.left
+        anchors.rightMargin: root.safeAreaMargins.right
+        anchors.bottomMargin: root.safeAreaMargins.bottom
 
         Button {
             text: "Download German AptAs Data"
+
+            Layout.fillWidth: true
+
             onClicked: {
                 Controller.downloadAptFile(Qt.url(AppSettings.aptAsDataLocation + "de_apt.cup"));
                 Controller.downloadAsFile(Qt.url(AppSettings.aptAsDataLocation + "de_asp.txt"));

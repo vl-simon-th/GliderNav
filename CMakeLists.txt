@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
-find_package(Qt6 REQUIRED COMPONENTS Positioning Network)
+find_package(Qt6 REQUIRED COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
 
 qt_add_executable(GliderNav
     main.cpp

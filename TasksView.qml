@@ -8,9 +8,15 @@ ListView {
     id: root
     signal toMovingMap()
 
+    required property var safeAreaMargins
+
     spacing: 6
 
     model: Controller.tasksList.tasks
+
+    header: Item {
+        height: root.safeAreaMargins.top
+    }
 
     delegate: Rectangle {
         id: delegate
@@ -19,6 +25,9 @@ ListView {
 
         anchors.left: parent.left
         anchors.right: parent.right
+
+        anchors.leftMargin: root.safeAreaMargins.left
+        anchors.rightMargin: root.safeAreaMargins.right
 
         height: rowLayout.implicitHeight
 
@@ -100,7 +109,8 @@ ListView {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.margins: 8
+        anchors.bottomMargin: 8
+        anchors.rightMargin: root.safeAreaMargins.right + 8
 
         onClicked: {
             taskEditView.visible = true
@@ -126,6 +136,8 @@ ListView {
         anchors.fill: root
         visible: false
         z: 2
+
+        safeAreaMargins: root.safeAreaMargins
 
         onClose: visible = false
     }

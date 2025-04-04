@@ -16,7 +16,7 @@ ListModel {
         cache: true
         aptColor: "black"
         asColor: "deepskyblue"
-        maxZoomLevel: 14.5
+        maxZoomLevel: 15.5
     }
     ListElement {
         name: "OpenTopoMap"
@@ -25,7 +25,34 @@ ListModel {
         cache: true
         aptColor: "black"
         asColor: "deepskyblue"
-        maxZoomLevel: 14.5
+        maxZoomLevel: 15.5
+    }
+    ListElement {
+        name: "WeGlideMap"
+        url: "https://dmt-wgld.b-cdn.net/dmt_hypsometric/dmt_hypsometric/"
+        attribution: "WeGlide"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 15.5
+    }
+    ListElement {
+        name: "Satellite Google"
+        url: "https://mt1.google.com/vt/lyrs=s&x=%x&y=%y&z=%z"
+        attribution: "Google"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 18
+    }
+    ListElement {
+        name: "Hybrid Google"
+        url: "https://mt1.google.com/vt/lyrs=y&x=%x&y=%y&z=%z"
+        attribution: "Google"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 18
     }
 
     function resolveName(name) {

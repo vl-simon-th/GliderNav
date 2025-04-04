@@ -1,8 +1,12 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
+import QtQuick.Layouts
 
-ApplicationWindow {
+import GliderNav
+
+Window {
+    id: root
     width: 390
     height: 844
     visible: true
@@ -10,81 +14,93 @@ ApplicationWindow {
 
     flags: Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
 
-    SwipeView {
-        id: swipeView
-        width: parent.width
-        height: parent.height
+    ColumnLayout {
+        anchors.fill: parent
+        SwipeView {
+            id: swipeView
 
-        interactive: false
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
-        currentIndex: 1
+            interactive: false
 
-        TasksView {
-            id: tasksView
-            onToMovingMap: swipeView.setCurrentIndex(1)
+            currentIndex: 1
+
+            TasksView {
+                id: tasksView
+                safeAreaMargins: root.SafeArea.margins
+                onToMovingMap: swipeView.setCurrentIndex(1)
+            }
+
+            MovingMap {
+                id: movingMap
+                safeAreaMargins: root.SafeArea.margins
+            }
+
+            LogsView {
+                id: logsView
+                safeAreaMargins: root.SafeArea.margins
+            }
+
+            SettingsView {
+                id: settingsView
+                safeAreaMargins: root.SafeArea.margins
+            }
         }
 
-        MovingMap {
-            id: movingMap
-        }
+        TabBar {
+            id: tabBar
 
-        LogsView {
-            id: logsView
-        }
+            currentIndex: swipeView.currentIndex
 
-        SettingsView {
-            id: settingsView
-        }
-    }
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40 + SafeArea.margins.bottom
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
+            TabButton {
+                id: tasksButton
 
-        TabButton {
-            id: tasksButton
+                text: qsTr("Tasks")
+                onClicked: swipeView.setCurrentIndex(0)
 
-            text: qsTr("Tasks")
-            onClicked: swipeView.setCurrentIndex(0)
+                display: AbstractButton.IconOnly
+                icon.source: "icons/stopwatch.svg"
+                icon.width: 30
+                icon.height: 30
+            }
 
-            display: AbstractButton.IconOnly
-            icon.source: "icons/stopwatch.svg"
-            icon.width: 30
-            icon.height: 30
-        }
+            TabButton {
+                id: mapButton
 
-        TabButton {
-            id: mapButton
+                text: qsTr("Map")
+                onClicked: swipeView.setCurrentIndex(1)
 
-            text: qsTr("Map")
-            onClicked: swipeView.setCurrentIndex(1)
+                display: AbstractButton.IconOnly
+                icon.source: "icons/map-marker-1.svg"
+                icon.width: 30
+                icon.height: 30
+            }
+            TabButton {
+                id: logsButton
 
-            display: AbstractButton.IconOnly
-            icon.source: "icons/map-marker-1.svg"
-            icon.width: 30
-            icon.height: 30
-        }
-        TabButton {
-            id: logsButton
+                text: qsTr("Logs")
+                onClicked: swipeView.setCurrentIndex(2)
 
-            text: qsTr("Logs")
-            onClicked: swipeView.setCurrentIndex(2)
+                display: AbstractButton.IconOnly
+                icon.source: "icons/route-1.svg"
+                icon.width: 30
+                icon.height: 30
+            }
+            TabButton {
+                id: settingsButton
 
-            display: AbstractButton.IconOnly
-            icon.source: "icons/route-1.svg"
-            icon.width: 30
-            icon.height: 30
-        }
-        TabButton {
-            id: settingsButton
+                text: qsTr("Settings")
+                onClicked: swipeView.setCurrentIndex(3)
 
-            text: qsTr("Settings")
-            onClicked: swipeView.setCurrentIndex(3)
-
-            display: AbstractButton.IconOnly
-            icon.source: "icons/gear-1.svg"
-            icon.width: 30
-            icon.height: 30
+                display: AbstractButton.IconOnly
+                icon.source: "icons/gear-1.svg"
+                icon.width: 30
+                icon.height: 30
+            }
         }
     }
 }

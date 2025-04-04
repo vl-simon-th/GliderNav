@@ -11,6 +11,8 @@ import GliderNav
 Map {
     id: root
 
+    required property var safeAreaMargins
+
     property Task currentTask
 
     property FlightLog currentFlightLog
@@ -164,6 +166,8 @@ Map {
 
     MapItemView {
         id: logMapItemView
+
+        z: 7
 
         model: currentLogModel
 
@@ -559,7 +563,8 @@ Map {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.margins: 8
+        anchors.bottomMargin: 8
+        anchors.rightMargin: 8 + root.safeAreaMargins.right
 
         onClicked: {
             root.center = positionSource.position.coordinate

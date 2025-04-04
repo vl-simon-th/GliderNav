@@ -8,13 +8,19 @@ import QtCore
 
 import QtQuick.Layouts
 
+import QtQuick.Effects
+
 import GliderNav
 
 Item {
     id: root
 
+    required property var safeAreaMargins
+
     AirMap {
         id: airMap
+
+        safeAreaMargins: root.safeAreaMargins
 
         anchors.fill: parent
 
@@ -46,8 +52,17 @@ Item {
 
                     anchors.centerIn: parent
                     source: "icons/glider.svg"
+                    fillMode: Image.PreserveAspectFit
+                    visible: false
 
                     rotation: airMap.userPos.direction ? airMap.userPos.direction : 0
+                }
+                MultiEffect {
+                    anchors.fill: userPositionImage
+                    source: userPositionImage
+                    brightness: 1
+                    colorization: 1
+                    colorizationColor: "chocolate"
                 }
             }
 
@@ -80,7 +95,7 @@ Item {
             glideRatioLabel.updateCurrentGlideRatio(lastUserPosCoords)
 
             if(reCenter) {
-                airMap.center = userPos
+                airMap.center = userPos.coordinate
             }
         }
 
@@ -118,7 +133,8 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.margins: 8
+        anchors.rightMargin: 8 + root.safeAreaMargins.right
+        anchors.topMargin: 8 + root.safeAreaMargins.top
 
         z: 10
 
@@ -156,7 +172,8 @@ Item {
 
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.margins: 8
+        anchors.rightMargin: 8 + root.safeAreaMargins.right
+        anchors.topMargin: 8 + root.safeAreaMargins.top
 
         onClicked: {
             Controller.currentLog = flightLogFactory.createObject()
@@ -169,7 +186,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 4
+        anchors.rightMargin: 4 +root.safeAreaMargins.right
 
         Label {
             id: heightLabel
@@ -203,7 +220,9 @@ Item {
                         var d_h = posList[posList.length-1].altitude - posList[0].altitude
                         var d_x = posList[posList.length-1].distanceTo(posList[0])
 
-                        gr = Math.round(d_x / d_h)
+                        gr = Math.round(d_x / -d_h)
+
+                        if(gr < 0 || gr > 100) gr = "-"
                     }
                 } else {
                     gr = "-"
@@ -241,7 +260,7 @@ Item {
     }
 
     Component.onDestruction: {
-        if(false && Controller.currentLog) {
+        if(Controller.currentLog) {
             Controller.currentLog.setEndTimeNow()
             Controller.currentLog.writeToDir()
         }

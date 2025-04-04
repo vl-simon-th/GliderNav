@@ -9,7 +9,6 @@
 
 #include "flightlog.h"
 #include "flightloglist.h"
-#include "flightlogmodel.h"
 
 #include "airportmodel.h"
 #include "airspacemodel.h"
@@ -28,6 +27,11 @@
 #include <QNetworkReply>
 
 #include <QCoreApplication>
+
+#include <QVariantMap>
+#include <QQuickWindow>
+
+#include <QScreen>
 
 class Controller : public QObject
 {

@@ -4,7 +4,6 @@
 FlightLogModel::FlightLogModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    connect(this, &FlightLogModel::logChanged, this, &FlightLogModel::connectLog);
 }
 
 int FlightLogModel::rowCount(const QModelIndex &parent) const
@@ -55,7 +54,14 @@ void FlightLogModel::setLog(FlightLog *newLog)
 {
     if (log == newLog)
         return;
+    if(log) {
+        log->disconnect(log, &FlightLog::pathChanged, this, &FlightLogModel::updateModel);
+    }
     log = newLog;
+    if(log) {
+        log->connect(log, &FlightLog::pathChanged, this, &FlightLogModel::updateModel);
+    }
+    visiblePathIndices.clear();
     emit logChanged();
 }
 
@@ -88,11 +94,4 @@ void FlightLogModel::updateModel()
     }
 
     emit visiblePathChanged();
-}
-
-void FlightLogModel::connectLog()
-{
-    if(log) {
-        connect(log, &FlightLog::pathChanged, this, &FlightLogModel::logChanged);
-    }
 }

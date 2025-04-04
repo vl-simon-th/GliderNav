@@ -11,15 +11,28 @@ import QtLocation
 Page {
     id: root
     property Task task : Task{}
+    required property var safeAreaMargins
+
     signal close()
+
+    header: Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: root.safeAreaMargins.top
+        color: "white"
+    }
 
     GridLayout {
         id: topLayout
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+
+        anchors.rightMargin: root.safeAreaMargins.right
+        anchors.leftMargin: root.safeAreaMargins.left
+
         rows: 2
-        columns: 5
+        columns: 3
         rowSpacing: 0
         columnSpacing: 6
 
@@ -66,59 +79,22 @@ Page {
             }
         }
 
-        Text {
-            id: aatText
+        ComboBox {
+            id: taskTypeComboBox
 
             Layout.row: 0
             Layout.column: 2
+            Layout.maximumWidth: implicitContentWidth + 8
             Layout.fillHeight: true
+            Layout.fillWidth: true
 
-            text: qsTr("AAT")
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignVCenter
+            model: ["AAT", "RT"]
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.leftMargin: -topLayout.columnSpacing
-                color: "white"
-                z: -1
-            }
-        }
-
-        Switch {
-            id: taskTypeSwitch
-
-            Layout.row: 0
-            Layout.column: 3
-            Layout.fillHeight: true
-
-            onCheckedChanged: {
-                if(!checked) {
-                    task.taskType = 0
-                } else {
-                    task.taskType = 1
-                }
+            onCurrentIndexChanged: {
+                task.taskType = taskTypeComboBox.currentIndex
             }
 
-            checked: task && task.taskType === 0 ? false : true
-
-            Rectangle {
-                anchors.fill: parent
-                anchors.leftMargin: -topLayout.columnSpacing
-                color: "white"
-                z: -1
-            }
-        }
-
-        Text {
-            id: rtText
-
-            Layout.row: 0
-            Layout.column: 4
-            Layout.fillHeight: true
-
-            text: qsTr("RT")
-            verticalAlignment: Text.AlignVCenter
+            currentIndex: task && task.taskType === 0 ? 0 : 1
 
             Rectangle {
                 anchors.fill: parent
@@ -135,7 +111,6 @@ Page {
 
             Layout.row: 1
             Layout.column: 2
-            Layout.columnSpan: 3
 
             Layout.fillWidth: true
             Layout.leftMargin: -parent.columnSpacing
@@ -212,6 +187,8 @@ Page {
 
     AirMap {
         id: airMap
+
+        safeAreaMargins: root.safeAreaMargins
 
         anchors.fill: parent
         currentTask: task

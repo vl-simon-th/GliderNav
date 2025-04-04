@@ -6,35 +6,29 @@ FlightLog::FlightLog(QObject *parent)
 }
 
 QColor FlightLog::numberToColor(double value) {
-    // Ensure the value is within the range -5 to 5
-    if (value < -5.0) value = -5.0;
-    if (value > 5.0) value = 5.0;
+    value = qBound(-5.0, value, 5.0); // Ensure the value is within the range
 
-    // Handle the special case for value 0
-    if (value == 0.0) {
-        return QColor(255, 255, 0); // Yellow color
-    }
+    double normalized = (value + 5) / 10.0; // Normalize the value to a range of 0 to 1
+    double r, g, b;
 
-    // Scale the value to a range of 0 to 1
-    double scaledValue;
-    if (value < 0.0) {
-        scaledValue = (value + 5.0) / 5.0; // Range from -5 to 0
+    if (value < 0) {
+        // Red to Orange
+        r = 1.0;
+        g = normalized * 2;
+        b = 0.0;
     } else {
-        scaledValue = value / 5.0; // Range from 0 to 5
+        // Orange to Green
+        r = 2 * (1 - normalized);
+        g = 1.0;
+        b = 0.0;
     }
 
-    // Calculate the red and green components
-    int red, green;
-    if (value < 0.0) {
-        red = 255;
-        green = scaledValue * 255; // Transition from red to yellow
-    } else {
-        red = (1.0 - scaledValue) * 255; // Transition from yellow to green
-        green = 255; // Green component stays at maximum
-    }
+    // Convert to 0-255 range
+    r = qRound(r * 255);
+    g = qRound(g * 255);
+    b = qRound(b * 255);
 
-    // Return the QColor
-    return QColor(red, green, 0);
+    return QColor(static_cast<int>(r), static_cast<int>(g), static_cast<int>(b));
 }
 
 QList<QGeoCoordinate> FlightLog::getPath() const

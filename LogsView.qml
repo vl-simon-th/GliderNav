@@ -11,17 +11,25 @@ import GliderNav
 Item {
     id: root
 
+    required property var safeAreaMargins
+
     ListView {
         id: listView
         anchors.fill: parent
 
-        anchors.margins: 6
+        anchors.leftMargin: 6 + root.safeAreaMargins.left
+        anchors.rightMargin: 6 + root.safeAreaMargins.right
+        anchors.bottomMargin: 6 + root.safeAreaMargins.bottom
 
         model: Controller.logList.logs
 
         property string dateFormat: "dd.MM.yyyy HH:mm:ss"
 
         spacing: 20
+
+        header: Item {
+            height: root.safeAreaMargins.top
+        }
 
         delegate: RowLayout {
             id: delegate
@@ -92,6 +100,8 @@ Item {
     AirMap  {
         id: logAirMap
 
+        safeAreaMargins: root.safeAreaMargins
+
         anchors.fill: parent
         visible: false
 
@@ -107,7 +117,8 @@ Item {
 
             anchors.top: parent.top
             anchors.left: parent.left
-            anchors.margins: 8
+            anchors.leftMargin: 8
+            anchors.topMargin: (Qt.platform.os === "ios" ? 40 : 0) + 8
 
             onClicked: {
                 logAirMap.visible = false
