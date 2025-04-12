@@ -76,22 +76,62 @@ void FlightLogModel::updateViewArea(const QGeoShape &newViewArea)
 void FlightLogModel::updateModel()
 {
     visiblePathIndices.clear();
-    for(int i = 0; i < log->getPath().length(); i++) {
-        if(viewArea.contains(log->getPath().at(i))) {
-            visiblePathIndices.append(i);
+
+    QList<QList<int>> newVisiblePathIndicesList;
+    newVisiblePathIndicesList.append(QList<int>());
+
+    bool nextListCreated = true;
+
+    bool insertNext = false;
+    if(log->getPath().length() > 1)
+        insertNext = viewArea.contains(log->getPath().at(0));
+    bool insertCurrent = false;
+    int lastInsert = -100; // smaller than anything that makes sense
+
+    int pathLengthm1 = log->getPath().length()-1; //optimization
+    for(int i = 0; i < pathLengthm1; i++) {
+        insertCurrent = insertNext;
+        insertNext = viewArea.contains(log->getPath().at(i+1));
+
+        if(insertCurrent) {
+            nextListCreated = false;
+            newVisiblePathIndicesList.last().append(i);
+            lastInsert = i;
+        } else if(insertNext || lastInsert == i-1) {
+            nextListCreated = false;
+            newVisiblePathIndicesList.last().append(i);
+        } else if(!nextListCreated){
+            newVisiblePathIndicesList.append(QList<int>());
+            nextListCreated = true;
         }
     }
+    if(insertNext || lastInsert == pathLengthm1-1)
+        newVisiblePathIndicesList.last().append(pathLengthm1);
 
-    if(visiblePathIndices.length() > 30) {
-        QList<int> newVisiblePathIndices;
-        int skip = ceil(visiblePathIndices.length() / 30.0);
+    if(newVisiblePathIndicesList.last().isEmpty()) newVisiblePathIndicesList.removeLast();
 
-        for(int i = 0; i < visiblePathIndices.length(); i += skip) {
-            newVisiblePathIndices.append(visiblePathIndices.at(i));
-        }
-
-        visiblePathIndices = newVisiblePathIndices;
+    int points = 0;
+    for(int i = 0; i < newVisiblePathIndicesList.length(); i++) {
+        points += newVisiblePathIndicesList.at(i).length();
     }
+    int skip = floor(points / 250.0);
+    if(skip < 1) skip = 1;
+
+    QList<int> newVisiblePathIndices;
+    for(int i = 0; i < newVisiblePathIndicesList.length(); i++) {
+        //add points
+        for(int j = 0; j < newVisiblePathIndicesList.at(i).length(); j+=skip) {
+            newVisiblePathIndices.append(newVisiblePathIndicesList.at(i).at(j));
+        }
+        if(newVisiblePathIndices.last() != newVisiblePathIndicesList.at(i).last())
+            newVisiblePathIndices.append(newVisiblePathIndicesList.at(i).last());
+
+        //inbetween
+        if(i != newVisiblePathIndicesList.length()-1)
+            newVisiblePathIndices.append((newVisiblePathIndicesList.at(i).last() + newVisiblePathIndicesList.at(i+1).first()) / 2);
+    }
+
+    visiblePathIndices = newVisiblePathIndices;
 
     emit visiblePathChanged();
 }

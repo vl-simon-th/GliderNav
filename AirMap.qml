@@ -412,7 +412,7 @@ Map {
             function updateLabelModel() {
                 var labelModel = []
 
-                if(root.zoomLevel > 10) {
+                if(root.zoomLevel > 12) {
                     var labelPixelDist = 400
 
                     var dist = 0;
@@ -489,10 +489,9 @@ Map {
         Controller.airportFilterModel.updateViewArea(root.visibleRegion);
         Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
 
-        currentLogModel.updateViewArea(root.visibleRegion);
-
-        var zoomLevelStep = Math.pow(root.zoomLevel-7, 2) * 0.2
+        var zoomLevelStep = Math.pow(root.zoomLevel-10, 2) * 0.2
         if(root.lastZoomLevelStep !== Math.round(zoomLevelStep)) {
+            currentLogModel.updateViewArea(root.visibleRegion);
             root.lastZoomLevelStep = Math.round(zoomLevelStep)
             root.updateAsLabels()
         }
@@ -511,15 +510,14 @@ Map {
 
         var dist = Math.sqrt(dx**2 + dy**2)
 
-        currentLogModel.updateViewArea(root.visibleRegion);
-
-        if(dist > 100) {
+        if(dist > 50) {
+            currentLogModel.updateViewArea(root.visibleRegion);
             root.lastCenter = root.center
             root.updateAsLabels()
         }
     }
 
-    Component.onCompleted: {
+    onMapReadyChanged: {
         Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
         Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);
 
@@ -543,7 +541,7 @@ Map {
     property bool posSourceActive : false
     PositionSource {
         id: positionSource
-        updateInterval: 3000
+        updateInterval: 2500
         active: root.posSourceActive && permission.status === Qt.Granted
 
         onPositionChanged: {

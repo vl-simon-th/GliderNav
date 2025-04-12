@@ -38,7 +38,6 @@ public:
 signals:
     void airspacesChanged();
     void sizeChanged();
-
     void availableTypesChanged();
 
 private:

@@ -69,7 +69,7 @@ void SectorQuickItem::paint(QPainter *painter)
     painter->drawPie(boundingRect().adjusted(1, 1, -1, -1), startAngle, angle);
 }
 
-QList<QGeoCoordinate> SectorQuickItem::getCoordinates() const
+const QList<QGeoCoordinate> &SectorQuickItem::getCoordinates() const
 {
     return coordinates;
 }

@@ -6,32 +6,34 @@ FlightLog::FlightLog(QObject *parent)
 }
 
 QColor FlightLog::numberToColor(double value) {
-    value = qBound(-5.0, value, 5.0); // Ensure the value is within the range
+    // Clamp the value to the range [-5, 5]
+    value = qBound(-5.0, value, 5.0);
 
-    double normalized = (value + 5) / 10.0; // Normalize the value to a range of 0 to 1
-    double r, g, b;
+    // Map the value to a range [0, 1]
+    double normalizedValue = (value + 5.0) / 10.0;
 
-    if (value < 0) {
-        // Red to Orange
-        r = 1.0;
-        g = normalized * 2;
-        b = 0.0;
+    // Interpolate the color based on the normalized value
+    int red, green, blue;
+
+    if (normalizedValue <= 0.5) {
+        // Interpolate between red (255, 0, 0) and yellow (255, 255, 0)
+        double t = normalizedValue / 0.5;
+        red = 255;
+        green = static_cast<int>(t * 255);
+        blue = 0;
     } else {
-        // Orange to Green
-        r = 2 * (1 - normalized);
-        g = 1.0;
-        b = 0.0;
+        // Interpolate between yellow (255, 255, 0) and green (119, 255, 0)
+        double t = (normalizedValue - 0.5) / 0.5;
+        red = static_cast<int>(255 - t * (255 - 119));
+        green = 255;
+        blue = 0;
     }
 
-    // Convert to 0-255 range
-    r = qRound(r * 255);
-    g = qRound(g * 255);
-    b = qRound(b * 255);
-
-    return QColor(static_cast<int>(r), static_cast<int>(g), static_cast<int>(b));
+    // Return the interpolated color
+    return QColor(red, green, blue);
 }
 
-QList<QGeoCoordinate> FlightLog::getPath() const
+const QList<QGeoCoordinate> &FlightLog::getPath() const
 {
     return path;
 }
@@ -252,7 +254,7 @@ FlightLog *FlightLog::readFromDir(const QDir &dir)
     return flightLog;
 }
 
-QList<QDateTime> FlightLog::getTimestamps() const
+const QList<QDateTime> &FlightLog::getTimestamps() const
 {
     return timestamps;
 }
@@ -265,7 +267,7 @@ void FlightLog::setTimestamps(const QList<QDateTime> &newTimestamps)
     emit timestampsChanged();
 }
 
-QList<QColor> FlightLog::getColors() const
+const QList<QColor> &FlightLog::getColors() const
 {
     return colors;
 }

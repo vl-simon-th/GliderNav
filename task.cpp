@@ -6,7 +6,7 @@ Task::Task(QObject *parent)
     connect(this, &Task::turnPointsChanged, this, &Task::calcLength);
 }
 
-QList<QGeoCoordinate> Task::getTurnPoints() const
+const QList<QGeoCoordinate> &Task::getTurnPoints() const
 {
     return turnPoints;
 }
@@ -19,7 +19,7 @@ void Task::setTurnPoints(const QList<QGeoCoordinate> &newTurnPoints)
     emit turnPointsChanged();
 }
 
-QList<double> Task::getDistancesToPoint() const
+const QList<double> &Task::getDistancesToPoint() const
 {
     return distancesToPoint;
 }

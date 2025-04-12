@@ -15,7 +15,7 @@ class TasksList : public QObject
 public:
     explicit TasksList(QObject *parent = nullptr);
 
-    QList<Task *> getTasks() const;
+    const QList<Task *> &getTasks() const;
     void setTasks(const QList<Task *> &newTasks);
     Q_INVOKABLE void addTask(Task *newTask);
     Q_INVOKABLE void removeTask(Task *task);

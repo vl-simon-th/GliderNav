@@ -31,13 +31,13 @@ class Task : public QObject
 public:
     explicit Task(QObject *parent = nullptr);
 
-    QList<QGeoCoordinate> getTurnPoints() const;
+    const QList<QGeoCoordinate> &getTurnPoints() const;
     void setTurnPoints(const QList<QGeoCoordinate> &newTurnPoints);
 
     QString getName() const;
     void setName(const QString &newName);
 
-    QList<double> getDistancesToPoint() const;
+    const QList<double> &getDistancesToPoint() const;
     void setDistancesToPoint(const QList<double> &newDistancesToPoint);
 
     Q_INVOKABLE void addTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distance);

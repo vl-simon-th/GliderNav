@@ -106,6 +106,7 @@ qt_add_qml_module(GliderNav
     QML_FILES MapSourceModel.qml
     SOURCES
     SOURCES sectorquickitem.h sectorquickitem.cpp
+    QML_FILES AptAsDataDownloadView.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

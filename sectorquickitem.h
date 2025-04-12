@@ -30,7 +30,7 @@ public:
 
     void paint(QPainter *painter) override;
 
-    QList<QGeoCoordinate> getCoordinates() const;
+    const QList<QGeoCoordinate> &getCoordinates() const;
     void setCoordinates(const QList<QGeoCoordinate> &newCoordinates);
 
 signals:

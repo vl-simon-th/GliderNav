@@ -16,7 +16,7 @@ ListModel {
         cache: true
         aptColor: "black"
         asColor: "deepskyblue"
-        maxZoomLevel: 15.5
+        maxZoomLevel: 16.5
     }
     ListElement {
         name: "OpenTopoMap"
@@ -25,7 +25,7 @@ ListModel {
         cache: true
         aptColor: "black"
         asColor: "deepskyblue"
-        maxZoomLevel: 15.5
+        maxZoomLevel: 16.5
     }
     ListElement {
         name: "WeGlideMap"
@@ -34,7 +34,7 @@ ListModel {
         cache: true
         aptColor: "black"
         asColor: "deepskyblue"
-        maxZoomLevel: 15.5
+        maxZoomLevel: 16.5
     }
     ListElement {
         name: "Satellite Google"
@@ -53,6 +53,15 @@ ListModel {
         aptColor: "black"
         asColor: "deepskyblue"
         maxZoomLevel: 18
+    }
+    ListElement {
+        name: "OLC"
+        url: "https://maps.onlinecontest.org/maps/h1/%z/%x/%y"
+        attribution: "OLC"
+        cache: true
+        aptColor: "black"
+        asColor: "deepskyblue"
+        maxZoomLevel: 16.5
     }
 
     function resolveName(name) {

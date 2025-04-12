@@ -84,7 +84,8 @@ Page {
 
             Layout.row: 0
             Layout.column: 2
-            Layout.maximumWidth: implicitContentWidth + 8
+            Layout.preferredWidth: parent.width/3
+            //Layout.maximumWidth: Math.max(parent.width/4, aatDistancesListView.visible ? aatDistancesListView.width : 0)
             Layout.fillHeight: true
             Layout.fillWidth: true
 

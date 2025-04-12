@@ -29,7 +29,7 @@ public:
 
     static QColor numberToColor(double value);
 
-    QList<QGeoCoordinate> getPath() const;
+    const QList<QGeoCoordinate> &getPath() const;
     void setPath(const QList<QGeoCoordinate> &newPath);
     Q_INVOKABLE void addPoint(const QGeoCoordinate &point);
 
@@ -45,10 +45,10 @@ public:
     Q_INVOKABLE void deleteDir();
     static FlightLog *readFromDir(const QDir &dir);
 
-    QList<QDateTime> getTimestamps() const;
+    const QList<QDateTime> &getTimestamps() const;
     void setTimestamps(const QList<QDateTime> &newTimestamps);
 
-    QList<QColor> getColors() const;
+    const QList<QColor> &getColors() const;
     void setColors(const QList<QColor> &newColors);
 
 signals:

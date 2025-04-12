@@ -56,7 +56,7 @@ public:
     AltitudeUnit getUpperAltitudeUnits() const;
     void setUpperAltitudeUnits(AltitudeUnit upperAltitudeUnits);
 
-    QList<QGeoCoordinate> getCoordinates() const;
+    const QList<QGeoCoordinate> &getCoordinates() const;
     void setCoordinates(const QList<QGeoCoordinate> &coordinates);
 
     QGeoRectangle getGeoBoundingRect() const;

@@ -89,7 +89,7 @@ void Airspace::setUpperAltitudeUnits(AltitudeUnit upperAltitudeUnits) {
     }
 }
 
-QList<QGeoCoordinate> Airspace::getCoordinates() const {
+const QList<QGeoCoordinate> &Airspace::getCoordinates() const {
     return coordinates;
 }
 

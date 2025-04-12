@@ -4,7 +4,7 @@ TasksList::TasksList(QObject *parent)
     : QObject{parent}
 {}
 
-QList<Task *> TasksList::getTasks() const
+const QList<Task *> &TasksList::getTasks() const
 {
     return tasks;
 }
