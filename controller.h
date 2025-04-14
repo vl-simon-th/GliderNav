@@ -69,9 +69,17 @@ public:
     Q_INVOKABLE void reloadAirports();
     Q_INVOKABLE void reloadAirspaces();
 
+    Q_INVOKABLE void clearAirspaceDir();
+    Q_INVOKABLE void clearAirportDir();
+
     Q_INVOKABLE static QString unitToString(AltitudeUnit unit);
 
     Q_INVOKABLE static void quit();
+
+    const QList<QString> &getAptAsCodes() const;
+    void setAptAsCodes(const QList<QString> &newAptAsCodes);
+    Q_INVOKABLE void addAptAsCode(const QString &code);
+    Q_INVOKABLE void findCurrentAptAsCodes();
 
 public slots:
     void aptFileDownloaded(QNetworkReply *reply);
@@ -81,6 +89,8 @@ signals:
 
     void currentTaskChanged();
     void currentLogChanged();
+
+    void aptAsCodesChanged();
 
 private:
     Task *currentTask;
@@ -106,6 +116,8 @@ private:
 
     QDir aptDir;
     QDir asDir;
+    QList<QString> aptAsCodes;
+    Q_PROPERTY(QList<QString> aptAsCodes READ getAptAsCodes WRITE setAptAsCodes NOTIFY aptAsCodesChanged FINAL)
 
     QNetworkAccessManager *aptNetworkManager;
     QNetworkAccessManager *asNetworkManager;

@@ -28,39 +28,21 @@ ListModel {
         maxZoomLevel: 16.5
     }
     ListElement {
-        name: "WeGlideMap"
-        url: "https://dmt-wgld.b-cdn.net/dmt_hypsometric/dmt_hypsometric/"
-        attribution: "WeGlide"
-        cache: true
-        aptColor: "black"
-        asColor: "deepskyblue"
-        maxZoomLevel: 16.5
-    }
-    ListElement {
-        name: "Satellite Google"
-        url: "https://mt1.google.com/vt/lyrs=s&x=%x&y=%y&z=%z"
-        attribution: "Google"
-        cache: true
-        aptColor: "black"
-        asColor: "deepskyblue"
-        maxZoomLevel: 18
-    }
-    ListElement {
-        name: "Hybrid Google"
-        url: "https://mt1.google.com/vt/lyrs=y&x=%x&y=%y&z=%z"
-        attribution: "Google"
-        cache: true
-        aptColor: "black"
-        asColor: "deepskyblue"
-        maxZoomLevel: 18
-    }
-    ListElement {
         name: "OLC"
         url: "https://maps.onlinecontest.org/maps/h1/%z/%x/%y"
         attribution: "OLC"
         cache: true
         aptColor: "black"
         asColor: "deepskyblue"
+        maxZoomLevel: 16.5
+    }
+    ListElement {
+        name: qsTr("None")
+        url: ""
+        attribution: ""
+        cache: false
+        aptColor: "lightgreen"
+        asColor: "darkblue"
         maxZoomLevel: 16.5
     }
 

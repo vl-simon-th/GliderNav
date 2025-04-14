@@ -7,234 +7,130 @@ import GliderNav
 
 import QtCore
 
-Flickable {
+Item {
     id: root
-
     required property var safeAreaMargins
+    StackView {
+        id: stackView
 
-    flickableDirection: Flickable.VerticalFlick
-
-    contentWidth: width
-    contentHeight: mainLayout.height + 70
-
-    ColumnLayout {
-        id: mainLayout
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.left: parent.left
-
+        anchors.fill: parent
         anchors.topMargin: root.safeAreaMargins.top
         anchors.leftMargin: root.safeAreaMargins.left
         anchors.rightMargin: root.safeAreaMargins.right
         anchors.bottomMargin: root.safeAreaMargins.bottom
 
-        Button {
-            text: "Download German AptAs Data"
+        topPadding: 100
 
-            Layout.fillWidth: true
+        clip: true
 
-            onClicked: {
-                Controller.downloadAptFile(Qt.url(AppSettings.aptAsDataLocation + "de_apt.cup"));
-                Controller.downloadAsFile(Qt.url(AppSettings.aptAsDataLocation + "de_asp.txt"));
+        initialItem: ListView {
+            id: mainListView
+
+            model: ListModel {
+                ListElement { name: "Download Airspace and Airport Data"; icon : "icons/cloud-download.svg" }
+                ListElement { name: "Airspace and Airport Options"; icon : "icons/clipboard.svg" }
+                ListElement { name: "Map Source"; icon : "icons/layout-26.svg" }
             }
-        }
 
-        Text {
-            id: airspaceHeader
-            text: qsTr("Airspace")
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pointSize: 24
+            spacing: 6
 
-            Layout.fillWidth: true
-        }
+            delegate: ItemDelegate {
+                id: mainItemDelegate
 
-        ListView {
-            id: validAsTypesListView
+                icon.source: model.icon
 
-            clip: true
+                text: model.name
+                font.pixelSize: 18
+                font.bold: true
+                anchors.left: parent.left
+                anchors.right: parent.right
 
-            interactive: false
-
-            property int delHeight : 40
-            implicitHeight: count * delHeight
-
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            model: Controller.airspaceModel.availableTypes
-
-            delegate: SwitchDelegate {
-                id: asDelegate
-                text: modelData
-
-                height: validAsTypesListView.delHeight
-
-                anchors.left: parent ? parent.left : undefined
-                anchors.right: parent ? parent.right : undefined
-
-                checked: Controller.airspaceFilterModel.validTypesContains(modelData)
-
-                onToggled: {
-                    Controller.airspaceFilterModel.updateValidTypes(modelData, checked)
-
-                    if(checked) {
-                        if(!AppSettings.validAsTypes.includes(modelData)) {
-                            AppSettings.validAsTypes.push(modelData)
-                        }
-                    } else {
-                        var index = AppSettings.validAsTypes.indexOf(modelData);
-                        if (index !== -1) {
-                          AppSettings.validAsTypes.splice(index, 1);
-                        }
+                onClicked: {
+                    if(model.index === 0) {
+                        stackView.pushItem(aptAsDataDownloadViewComponent)
+                    } else if (model.index === 1) {
+                        stackView.pushItem(aptAsOptionsViewComponent)
+                    } else if (model.index === 2) {
+                        stackView.pushItem(mapSourceComponent)
                     }
                 }
             }
+        }
 
-            Component.onCompleted: {
-                for(var i = 0; i < AppSettings.validAsTypes.length; i++) {
-                    Controller.airspaceFilterModel.updateValidTypes(AppSettings.validAsTypes[i], true)
-                }
+        Component {
+            id: aptAsDataDownloadViewComponent
+            AptAsDataDownloadView {
+                id: aptAsDataDownloadView
+
+                onClose: stackView.pop()
             }
         }
 
-        Text {
-            id: airportHeader
-            text: qsTr("Airports")
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pointSize: 24
+        Component {
+            id: aptAsOptionsViewComponent
+            AptAsOptionsView {
+                id: aptasOptionsView
 
-            Layout.fillWidth: true
+                onClose: stackView.pop()
+            }
         }
 
-        ListView {
-            id: validAptStyleListView
+        Component {
+            id: mapSourceComponent
+            Item {
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 8
 
-            clip: true
+                    Button {
+                        id: backButton
 
-            interactive: false
+                        icon.source: "icons/arrow-left-circle.svg"
+                        display: AbstractButton.IconOnly
+                        icon.width: 30
+                        icon.height: 30
 
-            property int delHeight : 40
-            implicitHeight: count * delHeight
+                        Layout.alignment: Qt.AlignLeft
 
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+                        onClicked: stackView.pop()
+                    }
 
-            model: Controller.airportModel.availableStyles
+                    Text {
+                        id: mapTypeLabel
+                        text: qsTr("Map Source")
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pointSize: 24
 
-            delegate: SwitchDelegate {
-                id: aptDelegate
-                text: validAptStyleListView.resolveStyle(modelData)
+                        Layout.fillWidth: true
+                    }
 
-                height: validAptStyleListView.delHeight
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        ComboBox {
+                            id: mapSourceCombo
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            model: MapSourceModel
+                            textRole: "name"
 
-                anchors.left: parent ? parent.left : undefined
-                anchors.right: parent ? parent.right : undefined
+                            Component.onCompleted: {
+                                for(var i = 0; i < MapSourceModel.count; i++) {
+                                    if(MapSourceModel.get(i).name === AppSettings.mapSourceName) {
+                                        currentIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
 
-                checked: Controller.airportFilterModel.validStylesContains(modelData)
-
-                onToggled: {
-                    Controller.airportFilterModel.updateValidStyle(modelData, checked)
-
-                    if(checked) {
-                        if(!AppSettings.validAptStyles.includes(modelData)) {
-                            AppSettings.validAptStyles.push(modelData)
-                        }
-                    } else {
-                        var index = AppSettings.validAptStyles.indexOf(modelData);
-                        if (index !== -1) {
-                          AppSettings.validAptStyles.splice(index, 1);
+                            onActivated: {
+                                AppSettings.mapSourceName = MapSourceModel.get(currentIndex).name;
+                            }
                         }
                     }
                 }
-            }
-
-            Component.onCompleted: {
-                for(var i = 0; i < AppSettings.validAptStyles.length; i++) {
-                    Controller.airportFilterModel.updateValidStyle(AppSettings.validAptStyles[i], true)
-                }
-            }
-
-            function resolveStyle(style) {
-                switch (style) {
-                    case 0:
-                        return "Unknown";
-                    case 1:
-                        return "Waypoint";
-                    case 2:
-                        return "Airfield with grass surface runway";
-                    case 3:
-                        return "Outlanding";
-                    case 4:
-                        return "Gliding airfield";
-                    case 5:
-                        return "Airfield with solid surface runway";
-                    case 6:
-                        return "Mountain Pass";
-                    case 7:
-                        return "Mountain Top";
-                    case 8:
-                        return "Transmitter Mast";
-                    case 9:
-                        return "VOR";
-                    case 10:
-                        return "NDB";
-                    case 11:
-                        return "Cooling Tower";
-                    case 12:
-                        return "Dam";
-                    case 13:
-                        return "Tunnel";
-                    case 14:
-                        return "Bridge";
-                    case 15:
-                        return "Power Plant";
-                    case 16:
-                        return "Castle";
-                    case 17:
-                        return "Intersection";
-                    case 18:
-                        return "Marker";
-                    case 19:
-                        return "Control/Reporting Point";
-                    case 20:
-                        return "PG Take Off";
-                    case 21:
-                        return "PG Landing Zone";
-                    default:
-                        return style;
-                }
-            }
-        }
-
-        Text {
-            id: mapTypeLabel
-            text: qsTr("Map Source")
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            font.pointSize: 24
-
-            Layout.fillWidth: true
-        }
-
-        ComboBox {
-            id: mapSourceCombo
-            Layout.fillWidth: true
-            model: MapSourceModel
-            textRole: "name"
-
-            Component.onCompleted: {
-                for(var i = 0; i < MapSourceModel.count; i++) {
-                    if(MapSourceModel.get(i).name === AppSettings.mapSourceName) {
-                        currentIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            onActivated: {
-                AppSettings.mapSourceName = MapSourceModel.get(currentIndex).name;
             }
         }
     }

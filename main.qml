@@ -12,10 +12,12 @@ Window {
     visible: true
     title: qsTr("Glider Nav")
 
-    flags: Qt.Window | Qt.MaximizeUsingFullscreenGeometryHint
+    flags: Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
+
         SwipeView {
             id: swipeView
 
@@ -48,13 +50,37 @@ Window {
             }
         }
 
+        Component.onCompleted: {
+            for(var i = 0; i < AppSettings.validAsTypes.length; i++) {
+                Controller.airspaceFilterModel.updateValidTypes(AppSettings.validAsTypes[i], true)
+            }
+            for(i = 0; i < AppSettings.validAptStyles.length; i++) {
+                Controller.airportFilterModel.updateValidStyle(AppSettings.validAptStyles[i], true)
+            }
+        }
+
         TabBar {
             id: tabBar
+
+            property var safeArea: root.SafeArea
 
             currentIndex: swipeView.currentIndex
 
             Layout.fillWidth: true
-            Layout.preferredHeight: 40 + SafeArea.margins.bottom
+            Layout.preferredHeight: 40 + root.SafeArea.margins.bottom
+
+            position: TabBar.Footer
+
+            Component.onCompleted: {
+                if(Qt.platform.os === "osx") {
+                    background = osxBackground
+                }
+            }
+
+            Rectangle {
+                id: osxBackground
+                color: "lightgrey"
+            }
 
             TabButton {
                 id: tasksButton

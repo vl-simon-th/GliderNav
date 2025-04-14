@@ -71,13 +71,10 @@ Map {
         target: AppSettings
         function onMapSourceNameChanged() {
             mapLoader.active = false
-            mapLoader.active = true
-        }
 
-        function satelliteUpdate() {
-            mapLoader.active = false
-            mapLoader.active = true
-            console.log("Satellite Update")
+            if(AppSettings.mapSourceName !== qsTr("None")) {
+                mapLoader.active = true
+            }
         }
     }
 
@@ -412,7 +409,7 @@ Map {
             function updateLabelModel() {
                 var labelModel = []
 
-                if(root.zoomLevel > 12) {
+                if(root.zoomLevel > 11) {
                     var labelPixelDist = 400
 
                     var dist = 0;
@@ -482,15 +479,14 @@ Map {
 
     property int lastZoomLevelStep : 0
     onZoomLevelChanged: {
-
-        Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
-        Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);
-
-        Controller.airportFilterModel.updateViewArea(root.visibleRegion);
-        Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
-
-        var zoomLevelStep = Math.pow(root.zoomLevel-10, 2) * 0.2
+        var zoomLevelStep = root.zoomLevel*10
         if(root.lastZoomLevelStep !== Math.round(zoomLevelStep)) {
+            Controller.airportFilterModel.updateZoomLevel(root.zoomLevel);
+            Controller.airspaceFilterModel.updateZoomLevel(root.zoomLevel);
+
+            Controller.airportFilterModel.updateViewArea(root.visibleRegion);
+            Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
+
             currentLogModel.updateViewArea(root.visibleRegion);
             root.lastZoomLevelStep = Math.round(zoomLevelStep)
             root.updateAsLabels()
@@ -499,9 +495,6 @@ Map {
 
     property geoCoordinate lastCenter : QtPositioning.coordinate(0, 0)
     onCenterChanged: {
-        Controller.airportFilterModel.updateViewArea(root.visibleRegion);
-        Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
-
         var p1 = root.fromCoordinate(lastCenter, false)
         var p2 = root.fromCoordinate(root.center, false)
 
@@ -511,6 +504,8 @@ Map {
         var dist = Math.sqrt(dx**2 + dy**2)
 
         if(dist > 50) {
+            Controller.airportFilterModel.updateViewArea(root.visibleRegion);
+            Controller.airspaceFilterModel.updateViewArea(root.visibleRegion);
             currentLogModel.updateViewArea(root.visibleRegion);
             root.lastCenter = root.center
             root.updateAsLabels()
@@ -562,7 +557,7 @@ Map {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.bottomMargin: 8
-        anchors.rightMargin: 8 + root.safeAreaMargins.right
+        anchors.rightMargin: Math.max(root.safeAreaMargins.right + 2, 8)
 
         onClicked: {
             root.center = positionSource.position.coordinate

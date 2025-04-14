@@ -110,6 +110,8 @@ Item {
 
             text: qsTr("Back")
 
+            z: 7
+
             display: AbstractButton.IconOnly
             icon.source: "icons/arrow-left-circle.svg"
             icon.height: 30
@@ -117,8 +119,8 @@ Item {
 
             anchors.top: parent.top
             anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.topMargin: (Qt.platform.os === "ios" ? 40 : 0) + 8
+            anchors.leftMargin: Math.max(root.safeAreaMargins.left + 2, 8)
+            anchors.topMargin: Math.max(root.safeAreaMargins.top + 2, 8)
 
             onClicked: {
                 logAirMap.visible = false

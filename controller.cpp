@@ -92,7 +92,7 @@ AirspaceFilterModel *Controller::getAirspaceFilterModel() const
 
 
 
-//does not work for ios :(
+//does not work for ios yet :(
 void Controller::copyFilesToApt(const QList<QUrl> &files)
 {
     QDir baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -144,6 +144,24 @@ void Controller::reloadAirspaces()
 {
     airspaceModel->reloadAirspaces(asDir);
     airspaceFilterModel->invalidate();
+}
+
+void Controller::clearAirspaceDir()
+{
+    QFileInfoList fileInfoList = asDir.entryInfoList(QDir::Files);
+
+    foreach (const QFileInfo& fileInfo, fileInfoList) {
+        asDir.remove(fileInfo.fileName());
+    }
+}
+
+void Controller::clearAirportDir()
+{
+    QFileInfoList fileInfoList = aptDir.entryInfoList(QDir::Files);
+
+    foreach (const QFileInfo& fileInfo, fileInfoList) {
+        aptDir.remove(fileInfo.fileName());
+    }
 }
 
 QString Controller::unitToString(AltitudeUnit unit)
@@ -230,4 +248,54 @@ void Controller::asFileDownloaded(QNetworkReply *reply)
     }
 
     reply->deleteLater();
+}
+
+const QList<QString> &Controller::getAptAsCodes() const
+{
+    return aptAsCodes;
+}
+
+void Controller::setAptAsCodes(const QList<QString> &newAptAsCodes)
+{
+    if (aptAsCodes == newAptAsCodes)
+        return;
+    aptAsCodes = newAptAsCodes;
+    emit aptAsCodesChanged();
+}
+
+void Controller::addAptAsCode(const QString &code)
+{
+    if(aptAsCodes.contains(code))
+        return;
+    aptAsCodes.append(code);
+    emit aptAsCodesChanged();
+}
+
+void Controller::findCurrentAptAsCodes()
+{
+    QList<QString> newAptAsCodes;
+
+    QStringList filtersAs;
+    filtersAs << "*.txt";
+    QFileInfoList fileInfoListAs = asDir.entryInfoList(filtersAs, QDir::Files);
+
+    foreach (const QFileInfo& fileInfo, fileInfoListAs) {
+        QString code = fileInfo.fileName().first(2);
+        if(!newAptAsCodes.contains(code)) {
+            newAptAsCodes.append(code);
+        }
+    }
+
+    QStringList filtersApt;
+    filtersApt << "*.cup";
+    QFileInfoList fileInfoListApt = asDir.entryInfoList(filtersApt, QDir::Files);
+
+    foreach (const QFileInfo& fileInfo, fileInfoListApt) {
+        QString code = fileInfo.fileName().first(2);
+        if(!newAptAsCodes.contains(code)) {
+            newAptAsCodes.append(code);
+        }
+    }
+
+    setAptAsCodes(newAptAsCodes);
 }

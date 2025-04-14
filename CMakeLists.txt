@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
-find_package(Qt6 REQUIRED COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
+find_package(Qt6 REQUIRED COMPONENTS Gui Qml QuickControls2 Quick Positioning Network)
 
 qt_add_executable(GliderNav
     main.cpp
@@ -53,25 +53,42 @@ qt_add_resources(GliderNav "configuration"
         qtquickcontrols2.conf
 )
 
+if(IOS)
+    list(APPEND OBJC_SOURCES
+        iostools.h
+        iostools.mm
+    )
+endif()
+
 qt_add_qml_module(GliderNav
     URI GliderNav
     VERSION 1.0
     QML_FILES
-    main.qml
+        main.qml
         MovingMap.qml
         TasksView.qml
         LogsView.qml
         AirMap.qml
         SettingsView.qml
         TaskEditView.qml
+        AppSettings.qml
+        AirportMenu.qml
+        MapSourceModel.qml
+
+        AptAsMenuSection.qml
 
     RESOURCES
         icons/aeroplane-1.svg
+        icons/angle-double-down.svg
+        icons/angle-double-right.svg
         icons/arrow-left-circle.svg
         icons/check-circle-1.svg
+        icons/clipboard.svg
+        icons/cloud-download.svg
         icons/eye.svg
         icons/gear-1.svg
         icons/glider.svg
+        icons/layout-26.svg
         icons/location-arrow-right.svg
         icons/map-marker-1.svg
         icons/pencil-1.svg
@@ -97,16 +114,14 @@ qt_add_qml_module(GliderNav
     SOURCES airportfiltermodel.h airportfiltermodel.cpp
     SOURCES roles.h
     SOURCES airspacefiltermodel.h airspacefiltermodel.cpp
+    SOURCES sectorquickitem.h sectorquickitem.cpp
 
     NO_RESOURCE_TARGET_PATH
 
-    QML_FILES AppSettings.qml
-    QML_FILES
-    QML_FILES AirportMenu.qml
-    QML_FILES MapSourceModel.qml
     SOURCES
-    SOURCES sectorquickitem.h sectorquickitem.cpp
-    QML_FILES AptAsDataDownloadView.qml
+        ${OBJC_SOURCES}
+        QML_FILES AptAsDataDownloadView.qml
+        QML_FILES AptAsOptionsView.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

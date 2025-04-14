@@ -47,8 +47,13 @@ Item {
                 Layout.row: 0
                 Layout.column: 0
 
+                Layout.minimumHeight: 25
+                Layout.preferredWidth: height
+
                 display: AbstractButton.IconOnly
                 icon.source: "icons/arrow-left-circle.svg"
+                icon.width: 30
+                icon.height: 30
 
                 onClicked: root.airport = defaultAirport
             }
@@ -66,7 +71,7 @@ Item {
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 12
+                font.pointSize: 16
             }
 
             Text {
@@ -104,7 +109,8 @@ Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                text: qsTr("Alt: ") + root.airport.elevation + "m"
+                text: qsTr("alt: ") + root.airport.elevation + "m"
+                verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
 
@@ -119,6 +125,8 @@ Item {
 
                 text: qsTr(root.resolveStyle(root.airport.style))
                 horizontalAlignment: Text.AlignHCenter
+
+                wrapMode: Text.Wrap
             }
 
             Text {
@@ -158,6 +166,7 @@ Item {
                 Layout.fillWidth: true
 
                 text: root.airport.desc
+                wrapMode: Text.Wrap
             }
         }
 

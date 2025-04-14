@@ -3,6 +3,10 @@
 #include <QtQml/qqmlextensionplugin.h>
 #include <QtQuickControls2/qquickstyle.h>
 
+#ifdef Q_OS_IOS
+    #include "iostools.h"
+#endif
+
 using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[])
@@ -24,6 +28,10 @@ int main(int argc, char *argv[])
     engine.load(url);
     if (engine.rootObjects().isEmpty())
         return -1;
+
+#ifdef Q_OS_IOS
+    IosTools::setLockScreenTimerDisabled();
+#endif
 
     return app.exec();
 }
