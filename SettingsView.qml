@@ -21,15 +21,78 @@ Item {
 
         topPadding: 100
 
+        popEnter: Transition {
+            SequentialAnimation {
+                PropertyAction {
+                    property: "transformOrigin"
+                    value: Item.Top
+                }
+                NumberAnimation {
+                    property: "rotation"
+                    from: -180
+                    to: 0
+                    duration: 600
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+        popExit: Transition {
+            SequentialAnimation {
+                PropertyAction {
+                    property: "transformOrigin"
+                    value: Item.Top
+                }
+                NumberAnimation {
+                    property: "rotation"
+                    from: 0
+                    to: 180
+                    duration: 600
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+
+        pushEnter: Transition {
+            SequentialAnimation {
+                PropertyAction {
+                    property: "transformOrigin"
+                    value: Item.Top
+                }
+                NumberAnimation {
+                    property: "rotation"
+                    from: -180
+                    to: 0
+                    duration: 600
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+        pushExit: Transition {
+            SequentialAnimation {
+                PropertyAction {
+                    property: "transformOrigin"
+                    value: Item.Top
+                }
+                NumberAnimation {
+                    property: "rotation"
+                    from: 0
+                    to: 180
+                    duration: 600
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+
         clip: true
 
         initialItem: ListView {
             id: mainListView
 
             model: ListModel {
-                ListElement { name: "Download Airspace and Airport Data"; icon : "icons/cloud-download.svg" }
-                ListElement { name: "Airspace and Airport Options"; icon : "icons/clipboard.svg" }
-                ListElement { name: "Map Source"; icon : "icons/layout-26.svg" }
+                ListElement { name: qsTr("Download Airspace and Airport Data"); icon: "icons/cloud-download.svg" }
+                ListElement { name: qsTr("Airspace and Airport Options"); icon: "icons/clipboard.svg" }
+                ListElement { name: qsTr("Map Source"); icon: "icons/layout-26.svg" }
+                ListElement { name: qsTr("Appearance"); icon: ""}
             }
 
             spacing: 6
@@ -45,13 +108,15 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
+                highlighted: false
+
                 onClicked: {
                     if(model.index === 0) {
-                        stackView.pushItem(aptAsDataDownloadViewComponent)
+                        stackView.push(aptAsDataDownloadViewComponent)
                     } else if (model.index === 1) {
-                        stackView.pushItem(aptAsOptionsViewComponent)
+                        stackView.push(aptAsOptionsViewComponent)
                     } else if (model.index === 2) {
-                        stackView.pushItem(mapSourceComponent)
+                        stackView.push(mapSourceComponent)
                     }
                 }
             }
