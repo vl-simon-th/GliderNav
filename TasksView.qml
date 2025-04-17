@@ -69,8 +69,8 @@ ListView {
                 id: editButton
 
                 onClicked: {
-                    taskEditView.visible = true
                     taskEditView.task = task
+                    taskEditView.visible = true
                 }
 
                 Layout.fillHeight: true

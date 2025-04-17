@@ -41,7 +41,9 @@ public:
     void setDistancesToPoint(const QList<double> &newDistancesToPoint);
 
     Q_INVOKABLE void addTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distance);
+    Q_INVOKABLE void insertTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distance, const int &index);
     Q_INVOKABLE void removeTurnPoint(const QGeoCoordinate &turnPoint);
+    Q_INVOKABLE void removeTurnPoint(const int &index);
 
     Q_INVOKABLE double calculateDistance();
 

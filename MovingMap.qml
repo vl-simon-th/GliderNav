@@ -33,6 +33,7 @@ Item {
 
         onMovedByHand: reCenter = false
         onCenterButtonClicked: reCenter = true
+        centerButtonVisible: true
 
         property Position userPos : Position{}
         property list<geoCoordinate> lastUserPosCoords : []
@@ -62,7 +63,7 @@ Item {
                     source: userPositionImage
                     brightness: 1
                     colorization: 1
-                    colorizationColor: "chocolate"
+                    colorizationColor: "deeppink"
                 }
             }
 
@@ -131,10 +132,13 @@ Item {
         icon.height: 30
         icon.width: 30
 
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.rightMargin: 8 + root.safeAreaMargins.right
-        anchors.topMargin: 8 + root.safeAreaMargins.top
+        width: 55
+        height: 55
+
+        anchors.top: infoLayout.bottom
+        anchors.left: parent.left
+        anchors.leftMargin: Math.max(8, 2 + root.safeAreaMargins.left)
+        anchors.topMargin: 8
 
         z: 10
 
@@ -170,10 +174,13 @@ Item {
         icon.height: 30
         icon.width: 30
 
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.rightMargin: 8 + root.safeAreaMargins.right
-        anchors.topMargin: 8 + root.safeAreaMargins.top
+        width: 55
+        height: 55
+
+        anchors.top: leftSpacer.width > 75 ? infoLayout.top : infoLayout.bottom
+        anchors.left: parent.left
+        anchors.leftMargin: Math.max(8, 2 + root.safeAreaMargins.left)
+        anchors.topMargin: 8
 
         onClicked: {
             Controller.currentLog = flightLogFactory.createObject()
@@ -181,20 +188,34 @@ Item {
         }
     }
 
-    ColumnLayout {
+    RowLayout {
         id: infoLayout
 
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
+        anchors.left: parent.left
         anchors.right: parent.right
-        anchors.rightMargin: 4 +root.safeAreaMargins.right
+        anchors.topMargin: Math.max(8, root.safeAreaMargins.top + 2)
+        anchors.leftMargin: 4 + root.safeAreaMargins.left
+        anchors.rightMargin: 4 + root.safeAreaMargins.right
+
+        property int maxWidth: 75
+        property int prefWidth: (width - (children.length - 1) *spacing) / (children.length-2)
+
+        spacing: 6
+
+        Item {
+            id: leftSpacer
+            Layout.fillWidth: true
+        }
 
         Label {
             id: heightLabel
             text: airMap.userPos.altitudeValid ? Math.round(airMap.userPos.coordinate.altitude) + " m" : "--- m"
+            font.pixelSize: 16
 
-            Layout.preferredHeight: startLogButton.height
-            Layout.minimumWidth: Math.max(startLogButton.width, contentWidth + 8)
-            Layout.fillWidth: true
+            Layout.preferredHeight: width
+            Layout.maximumWidth: infoLayout.maxWidth
+            Layout.preferredWidth: infoLayout.prefWidth
 
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -232,10 +253,11 @@ Item {
             }
 
             text: "- : 1"
+            font.pixelSize: 16
 
-            Layout.preferredHeight: startLogButton.height
-            Layout.minimumWidth: Math.max(startLogButton.width, contentWidth + 8)
-            Layout.fillWidth: true
+            Layout.preferredHeight: width
+            Layout.maximumWidth: infoLayout.maxWidth
+            Layout.preferredWidth: infoLayout.prefWidth
 
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -247,6 +269,65 @@ Item {
                 border.width: 2
                 color: "white"
             }
+        }
+
+        Label {
+            Layout.preferredHeight: width
+            Layout.maximumWidth: infoLayout.maxWidth
+            Layout.preferredWidth: infoLayout.prefWidth
+
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+
+            background: Rectangle {
+                radius: 4
+                border.color: "grey"
+                border.width: 2
+                color: "white"
+            }
+        }
+
+        Label {
+            id: distToGoalLabel
+
+            text: airMap.userPos && airMap.goal && airMap.goal.isValid ? Math.round(airMap.userPos.coordinate.distanceTo(airMap.goal)/1000) + " km" : "- km"
+
+            Layout.preferredHeight: width
+            Layout.maximumWidth: infoLayout.maxWidth
+            Layout.preferredWidth: infoLayout.prefWidth
+
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+
+            background: Rectangle {
+                radius: 4
+                border.color: "grey"
+                border.width: 2
+                color: "white"
+            }
+        }
+
+        Label {
+            Layout.preferredHeight: width
+            Layout.maximumWidth: infoLayout.maxWidth
+            Layout.preferredWidth: infoLayout.prefWidth
+
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+
+            background: Rectangle {
+                radius: 4
+                border.color: "grey"
+                border.width: 2
+                color: "white"
+            }
+        }
+
+        Item {
+            Layout.fillWidth: true
         }
     }
 

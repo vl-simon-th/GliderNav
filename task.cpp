@@ -42,6 +42,14 @@ void Task::addTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distan
     emit distancesToPointChanged();
 }
 
+void Task::insertTurnPoint(const QGeoCoordinate &newTurnPoint, const double &distance, const int &index)
+{
+    turnPoints.insert(index, newTurnPoint);
+    distancesToPoint.insert(index, distance);
+    emit turnPointsChanged();
+    emit distancesToPointChanged();
+}
+
 void Task::removeTurnPoint(const QGeoCoordinate &turnPoint)
 {
     for(int i = 0; i < turnPoints.length(); i++) {
@@ -50,6 +58,14 @@ void Task::removeTurnPoint(const QGeoCoordinate &turnPoint)
             distancesToPoint.removeAt(i);
         }
     }
+    emit turnPointsChanged();
+    emit distancesToPointChanged();
+}
+
+void Task::removeTurnPoint(const int &index)
+{
+    turnPoints.removeAt(index);
+    distancesToPoint.removeAt(index);
     emit turnPointsChanged();
     emit distancesToPointChanged();
 }

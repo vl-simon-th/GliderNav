@@ -15,6 +15,7 @@ Window {
     flags: Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
 
     ColumnLayout {
+        id: mainLayout
         anchors.fill: parent
         spacing: 0
 
@@ -57,6 +58,8 @@ Window {
             for(i = 0; i < AppSettings.validAptStyles.length; i++) {
                 Controller.airportFilterModel.updateValidStyle(AppSettings.validAptStyles[i], true)
             }
+
+            root.setW
         }
 
         TabBar {
@@ -67,7 +70,13 @@ Window {
             currentIndex: swipeView.currentIndex
 
             Layout.fillWidth: true
-            Layout.preferredHeight: 40 + root.SafeArea.margins.bottom
+            Layout.preferredHeight: root.hideTabBar ? 0 : 40 + root.SafeArea.margins.bottom
+            Behavior on Layout.preferredHeight {
+                NumberAnimation {
+                    duration: 300 // Animation duration in milliseconds
+                    easing.type: Easing.InOutQuad // Easing curve for smooth animation
+                }
+            }
 
             position: TabBar.Footer
 
@@ -128,5 +137,26 @@ Window {
                 icon.height: 30
             }
         }
+    }
+
+    property bool hideTabBar : false
+
+    ToolButton {
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: tabBar.height
+
+        icon.source: !hideTabBar ? "icons/arrow-downward.svg" : "icons/arrow-upward.svg"
+        icon.width: 30
+        icon.height: 30
+
+        visible: swipeView.currentIndex === 1
+
+        width: 40
+        height: 40
+
+        z: 10
+
+        onClicked: hideTabBar = !hideTabBar
     }
 }

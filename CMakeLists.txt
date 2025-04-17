@@ -8,8 +8,14 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
 find_package(Qt6 REQUIRED COMPONENTS Gui Qml QuickControls2 Quick Positioning Network)
 
+set(MACOSX_BUNDLE_ICON_FILE GliderNavV4.icns)
+
+set(app_icon_macos "${CMAKE_CURRENT_SOURCE_DIR}/appIcons/GliderNavV4.icns")
+set_source_files_properties(${app_icon_macos} PROPERTIES
+    MACOSX_PACKAGE_LOCATION "Resources")
+
 qt_add_executable(GliderNav
-    main.cpp
+   MACOSX_BUNDLE main.cpp ${app_icon_macos}
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -81,13 +87,17 @@ qt_add_qml_module(GliderNav
         icons/aeroplane-1.svg
         icons/angle-double-down.svg
         icons/angle-double-right.svg
+        icons/arrow-downward.svg
         icons/arrow-left-circle.svg
+        icons/arrow-upward.svg
         icons/check-circle-1.svg
         icons/clipboard.svg
         icons/cloud-download.svg
         icons/eye.svg
         icons/gear-1.svg
+
         icons/glider.svg
+
         icons/layout-26.svg
         icons/location-arrow-right.svg
         icons/map-marker-1.svg
@@ -122,6 +132,8 @@ qt_add_qml_module(GliderNav
         ${OBJC_SOURCES}
         QML_FILES AptAsDataDownloadView.qml
         QML_FILES AptAsOptionsView.qml
+        QML_FILES
+        QML_FILES TurnpointDialog.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

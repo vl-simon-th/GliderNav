@@ -191,10 +191,10 @@ Map {
         }
 
         MapItemView {
-            model: currentTask && currentTask.taskType === 0 ? currentTask.turnPoints : []
+            model: currentTask && currentTask.taskType === 0 ? currentTask.turnPoints.length : 0
 
             delegate: MapCircle {
-                center: modelData
+                center: currentTask.turnPoints[model.index]
                 property double distance : root.currentTask && root.currentTask.distancesToPoint[index] ? root.currentTask.distancesToPoint[index] : 0
 
                 radius: distance
@@ -208,22 +208,24 @@ Map {
         property color sectorColor: "orange"
 
         MapItemView {
-            model: currentTask ? currentTask.turnPoints.slice(1, -1) : []
+            model: currentTask ? Math.max(currentTask.turnPoints.length-2, 0) : 0
 
-            add: Transition {}
+            add: Transition {NumberAnimation{duration: 50}}
             remove: Transition {}
 
             delegate: MapQuickItem {
                 id: sector
-                coordinate: modelData
+                coordinate: currentTask.turnPoints[index+1]
 
                 sourceItem: SectorItem {
                     x: -width/2
                     y: -height/2
 
-                    coordinates: currentTask.turnPoints[index] && currentTask.turnPoints[index+1] && currentTask.turnPoints[index + 2] ?
-                                     [currentTask.turnPoints[index], currentTask.turnPoints[index+1], currentTask.turnPoints[index + 2]] :
-                                     [QtPositioning.coordinate(0,0), QtPositioning.coordinate(0,0), QtPositioning.coordinate(0,0)]
+                    property geoCoordinate c0: currentTask.turnPoints[index]
+                    property geoCoordinate c1: currentTask.turnPoints[index+1]
+                    property geoCoordinate c2: currentTask.turnPoints[index+2]
+
+                    coordinates: [c0, c1, c2]
 
                     color: taskMapItemGroup.sectorColor
                     borderWidth: 3
@@ -544,6 +546,7 @@ Map {
         }
     }
 
+    property bool centerButtonVisible: false
     Button {
         id: centerButton
 
@@ -554,10 +557,15 @@ Map {
         icon.height: 30
         icon.width: 30
 
+        visible: centerButtonVisible
+
+        width: 55
+        height: 55
+
         anchors.bottom: parent.bottom
-        anchors.right: parent.right
+        anchors.left: parent.left
         anchors.bottomMargin: 8
-        anchors.rightMargin: Math.max(root.safeAreaMargins.right + 2, 8)
+        anchors.leftMargin: Math.max(root.safeAreaMargins.left + 2, 8)
 
         onClicked: {
             root.center = positionSource.position.coordinate
@@ -568,6 +576,8 @@ Map {
     }
 
     function fitToTask() {
-        fitViewportToMapItems({taskPath})
+        if(currentTask.turnPoints.length > 0) {
+            fitViewportToMapItems({taskPath})
+        }
     }
 }

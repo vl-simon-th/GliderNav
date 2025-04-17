@@ -167,4 +167,11 @@ Airport *AirportModel::findAirport(const QGeoCoordinate &coord)
             return airport;
         }
     }
+
+    return nullptr;
+}
+
+const QList<Airport *> &AirportModel::getAirports() const
+{
+    return airports;
 }

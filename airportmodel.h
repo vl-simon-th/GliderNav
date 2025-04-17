@@ -37,6 +37,8 @@ public:
 
     Q_INVOKABLE Airport *findAirport(const QGeoCoordinate &coord);
 
+    const QList<Airport *> &getAirports() const;
+
 signals:
     void airportsChanged();
     void sizeChanged();
@@ -46,6 +48,7 @@ signals:
 private:
     QList<Airport *> airports;
     QList<int> availableStyles;
+    Q_PROPERTY(QList<Airport *> airports READ getAirports NOTIFY airportsChanged FINAL)
     Q_PROPERTY(QList<int> availableStyles READ getAvailableStyles WRITE setAvailableStyles NOTIFY availableStylesChanged FINAL)
 };
 
