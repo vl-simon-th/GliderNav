@@ -3,7 +3,7 @@ A glider navigation app built using Qt running on all OS.
 
 Icons from [free line icons](https://lineicons.com/)
 
-##THIS IS STILL AN ALPHA
+## THIS IS STILL AN ALPHA
 
 If you want to built it yourself on your device:
 1. Download and setup qt / qt creator
