@@ -28,15 +28,6 @@ ListModel {
         maxZoomLevel: 16.5
     }
     ListElement {
-        name: "OLC"
-        url: "https://maps.onlinecontest.org/maps/h1/%z/%x/%y"
-        attribution: "OLC"
-        cache: true
-        aptColor: "black"
-        asColor: "deepskyblue"
-        maxZoomLevel: 16.5
-    }
-    ListElement {
         name: qsTr("None")
         url: ""
         attribution: ""

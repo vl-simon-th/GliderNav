@@ -231,7 +231,7 @@ double Task::getLength() const
 
 void Task::setLength(double newLength)
 {
-    if (qFuzzyCompare(length, newLength))
+    if (length == newLength)
         return;
     length = newLength;
     emit lengthChanged();

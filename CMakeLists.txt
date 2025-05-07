@@ -5,8 +5,7 @@ project(GliderNav VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 COMPONENTS Gui Qml Quick QuickControls2 Positioning Network)
-find_package(Qt6 REQUIRED COMPONENTS Gui Qml QuickControls2 Quick Positioning Network)
+find_package(Qt6 REQUIRED COMPONENTS Gui Qml QuickControls2 Quick Location Positioning Network Svg)
 
 set(MACOSX_BUNDLE_ICON_FILE GliderNavV4.icns)
 
@@ -41,8 +40,10 @@ target_link_libraries(GliderNav PUBLIC
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
 
+    Qt${QT_VERSION_MAJOR}::Location
     Qt${QT_VERSION_MAJOR}::Positioning
     Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Svg
 )
 
 set_source_files_properties(AppSettings.qml PROPERTIES
@@ -130,10 +131,9 @@ qt_add_qml_module(GliderNav
 
     SOURCES
         ${OBJC_SOURCES}
-        QML_FILES AptAsDataDownloadView.qml
-        QML_FILES AptAsOptionsView.qml
-        QML_FILES
-        QML_FILES TurnpointDialog.qml
+    QML_FILES AptAsDataDownloadView.qml
+    QML_FILES AptAsOptionsView.qml
+    QML_FILES TurnpointDialog.qml
 )
 
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)

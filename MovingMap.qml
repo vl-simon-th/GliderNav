@@ -55,8 +55,6 @@ Item {
                     source: "icons/glider.svg"
                     fillMode: Image.PreserveAspectFit
                     visible: false
-
-                    rotation: airMap.userPos.direction ? airMap.userPos.direction : 0
                 }
                 MultiEffect {
                     anchors.fill: userPositionImage
@@ -64,6 +62,8 @@ Item {
                     brightness: 1
                     colorization: 1
                     colorizationColor: "deeppink"
+
+                    rotation: airMap.userPos.direction ? airMap.userPos.direction : 0
                 }
             }
 

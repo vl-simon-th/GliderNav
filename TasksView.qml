@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
 
 import GliderNav
 
@@ -69,7 +70,14 @@ ListView {
                 id: editButton
 
                 onClicked: {
-                    taskEditView.task = task
+                    taskEditView.currentTask = task
+
+                    taskEditView.task.name = task.name
+                    taskEditView.originalName = task.name
+                    taskEditView.task.taskType = task.taskType
+                    taskEditView.task.turnPoints = task.turnPoints
+                    taskEditView.task.distancesToPoint = task.distancesToPoint
+
                     taskEditView.visible = true
                 }
 
@@ -85,7 +93,7 @@ ListView {
             ToolButton {
                 id: deleteButton
 
-                onClicked: Controller.tasksList.removeTask(task)
+                onClicked: confrimDeleteDialog.open()
 
                 Layout.fillHeight: true
                 width: height
@@ -94,6 +102,15 @@ ListView {
                 icon.source: "icons/trash-3.svg"
                 icon.height: 25
                 icon.width: 25
+            }
+
+            MessageDialog {
+                id: confrimDeleteDialog
+
+                text: qsTr("Are you sure you want to delete \"" + task.name + "\" ?")
+                buttons: MessageDialog.Cancel | MessageDialog.Yes
+
+                onAccepted: Controller.tasksList.removeTask(task)
             }
         }
     }
@@ -113,19 +130,15 @@ ListView {
         anchors.rightMargin: root.safeAreaMargins.right + 8
 
         onClicked: {
-            taskEditView.visible = true
-            taskEditView.task = taskFactory.createObject()
-        }
+            taskEditView.currentTask = null
 
-        Component {
-            id:taskFactory
-            Task {
-                id: task
-                Component.onCompleted: {
-                    taskType = 1
-                    Controller.tasksList.addTask(task)
-                }
-            }
+            taskEditView.task.name = ""
+            taskEditView.originalName = ""
+            taskEditView.task.taskType = 1
+            taskEditView.task.turnPoints = []
+            taskEditView.task.distancesToPoint = []
+
+            taskEditView.visible = true
         }
     }
 
@@ -139,6 +152,37 @@ ListView {
 
         safeAreaMargins: root.safeAreaMargins
 
-        onClose: visible = false
+        property Task currentTask
+
+        onAccepted: {
+            visible = false
+
+            if(currentTask && currentTask.name !== task.name) {
+                currentTask.deleteDir() //delete dir with old name and create new instead of overwriting the old one
+            }
+
+            if(!currentTask) {
+                currentTask = taskFactory.createObject()
+            }
+
+            currentTask.name = task.name
+            currentTask.taskType = task.taskType
+            currentTask.turnPoints = task.turnPoints
+            currentTask.distancesToPoint = task.distancesToPoint
+
+            currentTask.writeToDir()
+        }
+
+        onRejected: visible = false
+
+        Component {
+            id:taskFactory
+            Task {
+                id: task
+                Component.onCompleted: {
+                    Controller.tasksList.addTask(task)
+                }
+            }
+        }
     }
 }

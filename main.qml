@@ -12,7 +12,7 @@ Window {
     visible: true
     title: qsTr("Glider Nav")
 
-    flags: Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
+    flags: Qt.ExpandedClientAreaHint
 
     ColumnLayout {
         id: mainLayout

@@ -92,7 +92,6 @@ Item {
                 ListElement { name: qsTr("Download Airspace and Airport Data"); icon: "icons/cloud-download.svg" }
                 ListElement { name: qsTr("Airspace and Airport Options"); icon: "icons/clipboard.svg" }
                 ListElement { name: qsTr("Map Source"); icon: "icons/layout-26.svg" }
-                ListElement { name: qsTr("Appearance"); icon: ""}
             }
 
             spacing: 6

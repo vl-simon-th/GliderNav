@@ -12,14 +12,16 @@ import QtLocation
 Page {
     id: root
     property Task task : Task{}
+    property string originalName : ""
     required property var safeAreaMargins
 
-    signal close()
+    signal accepted()
+    signal rejected()
 
     onVisibleChanged: {
         if(visible) {
             airMap.fitToTask()
-            footerRoot.height = footerFlickable.contentHeight + 6
+            footerRoot.height = Math.min(footerFlickable.contentHeight + 6, root.height - mover.height - root.safeAreaMargins.top)
         }
     }
 
@@ -217,6 +219,12 @@ Page {
 
             contentWidth: width
             contentHeight: footerLayout.implicitHeight
+
+            onContentHeightChanged: {
+                if(footerRoot.height > contentHeight + 6) {
+                    footerRoot.height = contentHeight + 6;
+                }
+            }
 
             flickableDirection: Flickable.VerticalFlick
             clip: true
@@ -521,11 +529,7 @@ Page {
                             Layout.fillWidth: true
 
                             onClicked: {
-                                if(task.name === "") {
-                                    Controller.tasksList.removeTask(task)
-                                }
-
-                                root.close()
+                                root.rejected()
                             }
                         }
 
@@ -541,18 +545,40 @@ Page {
 
                             onClicked: {
                                 if(nameTextField.text !== "") {
-                                    task.name = nameTextField.text
-                                    task.writeToDir()
-                                    root.close()
+                                    if(nameTextField.text !== root.originalName) {
+                                        var nameUsed = false
+
+                                        for(var i = 0; i < Controller.tasksList.tasks.length; i++) {
+                                            if(Controller.tasksList.tasks[i].name === nameTextField.text) {
+                                                nameUsed = true
+                                                break
+                                            }
+                                        }
+
+                                        if(nameUsed) {
+                                            taskUniqueNameDialog.open()
+                                        } else {
+                                            task.name = nameTextField.text
+                                            root.accepted()
+                                        }
+                                    } else {
+                                        task.name = nameTextField.text
+                                        root.accepted()
+                                    }
                                 } else {
-                                    dialog.open()
+                                    taskNameNeededDialog.open()
                                 }
                             }
 
                             MessageDialog {
-                                id: dialog
+                                id: taskNameNeededDialog
                                 buttons: MessageDialog.Ok
                                 text: qsTr("Every Task needs a name.")
+                            }
+                            MessageDialog {
+                                id: taskUniqueNameDialog
+                                buttons: MessageDialog.Ok
+                                text: qsTr("Every Task needs an unique name.")
                             }
                         }
                     }

@@ -188,13 +188,15 @@ Map {
 
             line.color: "yellow"
             line.width: 4
+
+            referenceSurface: QtLocation.ReferenceSurface.Globe
         }
 
         MapItemView {
             model: currentTask && currentTask.taskType === 0 ? currentTask.turnPoints.length : 0
 
             delegate: MapCircle {
-                center: currentTask.turnPoints[model.index]
+                center: currentTask.turnPoints[model.index] ? currentTask.turnPoints[model.index] : null
                 property double distance : root.currentTask && root.currentTask.distancesToPoint[index] ? root.currentTask.distancesToPoint[index] : 0
 
                 radius: distance
@@ -215,15 +217,15 @@ Map {
 
             delegate: MapQuickItem {
                 id: sector
-                coordinate: currentTask.turnPoints[index+1]
+                coordinate: currentTask ? currentTask.turnPoints[index+1] ? currentTask.turnPoints[index+1] : null : null
 
                 sourceItem: SectorItem {
                     x: -width/2
                     y: -height/2
 
-                    property geoCoordinate c0: currentTask.turnPoints[index]
-                    property geoCoordinate c1: currentTask.turnPoints[index+1]
-                    property geoCoordinate c2: currentTask.turnPoints[index+2]
+                    property geoCoordinate c0: currentTask ? currentTask.turnPoints[index] ? currentTask.turnPoints[index] : QtPositioning.coordinate(0, 0) : QtPositioning.coordinate(0, 0)
+                    property geoCoordinate c1: currentTask ? currentTask.turnPoints[index+1] ? currentTask.turnPoints[index+1] : QtPositioning.coordinate(0, 0) : QtPositioning.coordinate(0, 0)
+                    property geoCoordinate c2: currentTask ? currentTask.turnPoints[index+2] ? currentTask.turnPoints[index+2] : QtPositioning.coordinate(0, 0) : QtPositioning.coordinate(0, 0)
 
                     coordinates: [c0, c1, c2]
 
